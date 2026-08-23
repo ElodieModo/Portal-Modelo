@@ -417,13 +417,43 @@ We look forward to seeing you in the roda!
    */
   async sendEmail(options: EmailOptions) {
     try {
+      const sendGridApiKey = process.env.SENDGRID_API_KEY;
+      const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER;
+      const fromName = process.env.SMTP_FROM_NAME || 'Portal Modelo Capoeira';
+
+      if (sendGridApiKey && fromEmail) {
+        const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${sendGridApiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            personalizations: [{ to: [{ email: options.to }] }],
+            from: { email: fromEmail, name: fromName },
+            subject: options.subject,
+            content: [
+              { type: 'text/plain', value: options.text || '' },
+              { type: 'text/html', value: options.html }
+            ]
+          })
+        });
+
+        if (!response.ok) {
+          const details = await response.text();
+          throw new Error(`SendGrid API ${response.status}: ${details}`);
+        }
+
+        return { success: true, message: 'Email accepted by SendGrid' };
+      }
+
       if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
         console.warn('Email service not configured. Skipping email:', options.to);
         return { success: false, message: 'Email service not configured' };
       }
 
       const info = await transporter.sendMail({
-        from: `${process.env.SMTP_FROM_NAME || 'Portal Modelo Capoeira'} <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
+        from: `${fromName} <${fromEmail}>`,
         to: options.to,
         subject: options.subject,
         html: options.html,
