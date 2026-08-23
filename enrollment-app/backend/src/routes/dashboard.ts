@@ -19,6 +19,15 @@ router.get('/stats', adminOnly, async (req: AuthRequest, res: Response) => {
       where: { status: 'ACTIVE' }
     });
 
+    // Calculate total sessions (dates)
+    const allCourses = await prisma.course.findMany({
+      select: { date: true, sessionDates: true }
+    });
+    const totalSessions = allCourses.reduce((sum, course) => {
+      const dates = course.date ? 1 : (course.sessionDates?.length || 0);
+      return sum + (dates > 0 ? dates : 1); // Count at least 1 if no specific date
+    }, 0);
+
     const courseStats = await prisma.course.findMany({
       select: {
         id: true,
@@ -60,6 +69,7 @@ router.get('/stats', adminOnly, async (req: AuthRequest, res: Response) => {
 
     res.json({
       totalCourses,
+      totalSessions,
       totalStudents,
       totalEnrollments,
       activeEnrollments,

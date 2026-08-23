@@ -105,10 +105,14 @@ export default function EnrollmentStats() {
   return (
     <div>
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="text-3xl font-bold text-amber-600">{stats.totalCourses}</div>
           <p className="text-gray-600 mt-2">Total Courses</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="text-3xl font-bold text-orange-600">{stats.totalSessions}</div>
+          <p className="text-gray-600 mt-2">Total Sessions</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="text-3xl font-bold text-blue-600">{stats.totalStudents}</div>
