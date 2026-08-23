@@ -1,0 +1,167 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for instructors and admins
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  INSTRUCTOR
+}
+
+// Configuration model for instructor emails and settings
+model Config {
+  id              String   @id @default(cuid())
+  instructorEmail String? // Email to receive notifications
+  senderEmail     String   @default("noreply@capoeira-enrollment.com")
+  senderName      String   @default("Portal Modelo Capoeira")
+  updatedAt       DateTime @updatedAt
+
+  @@map("config")
+}
+
+// Course model
+model Course {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  category    String     @default("General")
+  level       Level
+  type        CourseType @default(REGULAR) // REGULAR or SPECIAL
+
+  // For regular courses (recurring)
+  dayOfWeek    String? // "Sunday", "Thursday" (nullable for special courses)
+  startTime    String // "10:30"
+  endTime      String // "11:30"
+  sessionDates DateTime[] // Explicit list of actual dates this course runs (skips weeks off automatically when set)
+
+  // For special/exceptional courses
+  date     DateTime? // Specific date for special courses
+  location String? // Optional location override
+
+  // Pricing
+  pricePerHour      Float @default(8.0) // £8/hour for adults
+  childPricePerHour Float @default(6.0) // £6/hour for children (14 and under)
+
+  maxStudents Int      @default(20)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  enrollments Enrollment[]
+
+  @@map("courses")
+}
+
+enum Level {
+  ALL_LEVELS
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  CHILDREN
+  FAMILY
+}
+
+enum CourseType {
+  REGULAR // Cours récurrents (dimanche, jeudi, etc.)
+  SPECIAL // Cours exceptionnels/ponctuels
+  WORKSHOP // Ateliers spécialisés
+}
+
+// Student model
+model Student {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String // Hashed password
+  firstName String
+  lastName  String
+  phone     String?
+  birthDate DateTime?
+  age       Int?
+  verified  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  enrollments Enrollment[]
+  attendance  Attendance[]
+
+  @@map("students")
+}
+
+// Enrollment model
+model Enrollment {
+  id             String   @id @default(cuid())
+  studentId      String
+  student        Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId       String
+  course         Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  enrollmentDate DateTime @default(now())
+
+  numberOfPeople Int           @default(1) // Number of people (1-6, for families)
+  participants   Participant[]
+  isFreeTrial    Boolean       @default(false) // True when this is the student's first ever enrollment
+  paymentWaived  Boolean       @default(false)
+  paymentReceived Boolean      @default(false)
+  status         Status        @default(ACTIVE)
+  enrolledAt     DateTime      @default(now())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  attendance Attendance[]
+
+  @@unique([studentId, courseId, enrollmentDate])
+  @@map("enrollments")
+}
+
+// One entry per person included in an enrollment (name + age)
+model Participant {
+  id           String     @id @default(cuid())
+  enrollmentId String
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  firstName    String
+  lastName     String
+  age          Int
+  createdAt    DateTime   @default(now())
+
+  @@map("participants")
+}
+
+enum Status {
+  ACTIVE
+  PAUSED
+  CANCELLED
+}
+
+// Attendance model
+model Attendance {
+  id           String     @id @default(cuid())
+  enrollmentId String
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  date         DateTime
+  present      Boolean
+  notes        String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@map("attendance")
+}

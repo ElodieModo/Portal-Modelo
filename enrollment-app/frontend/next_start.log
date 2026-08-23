@@ -1,0 +1,45 @@
+nohup: ignoring input
+
+> capoeira-enrollment-frontend@1.0.0 dev
+> next dev
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1859ms
+ ○ Compiling /admin/login ...
+ ✓ Compiled /admin/login in 1313ms (451 modules)
+ GET /admin/login 200 in 1455ms
+ ○ Compiling / ...
+ ✓ Compiled / in 716ms (497 modules)
+ GET / 200 in 836ms
+ ✓ Compiled /_not-found in 383ms (500 modules)
+ GET / 404 in 482ms
+ GET /_next/static/chunks/app/admin/login/page.js 404 in 20ms
+ GET /_next/static/css/app/layout.css?v=1787417772161 404 in 25ms
+ GET /_next/static/chunks/app/page.js 404 in 20ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 60ms
+ GET /_next/static/chunks/main-app.js?v=1787417772161 404 in 40ms
+ GET / 404 in 22ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 32ms
+ GET /_next/static/css/app/layout.css?v=1787417814467 404 in 32ms
+ GET /_next/static/chunks/main-app.js?v=1787417814467 404 in 24ms
+ GET / 404 in 21ms
+ GET /_next/static/chunks/main-app.js?v=1787417858919 404 in 19ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 23ms
+ GET /_next/static/css/app/layout.css?v=1787417858919 404 in 18ms
+ GET / 404 in 17ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 20ms
+ GET /_next/static/chunks/main-app.js?v=1787417861346 404 in 21ms
+ GET /_next/static/css/app/layout.css?v=1787417861346 404 in 13ms
+ HEAD /admin/login 404 in 15ms
+ HEAD / 404 in 13ms
+ HEAD / 404 in 13ms
+ HEAD /admin/login 404 in 15ms
+ HEAD / 404 in 12ms
+ HEAD /admin/login 404 in 22ms
+ ○ Compiling /student/login ...
+ ✓ Compiled /student/login in 564ms (508 modules)
+ HEAD /student/login 200 in 669ms
