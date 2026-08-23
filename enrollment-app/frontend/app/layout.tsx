@@ -4,6 +4,12 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Portal Modelo Capoeira',
   description: 'Enrollment portal for Capoeira & Brazilian Culture courses',
+  manifest: '/site.webmanifest',
+  themeColor: '#061b36',
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 export default function RootLayout({

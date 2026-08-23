@@ -1,0 +1,17 @@
+{
+  "name": "Portal Modelo Capoeira",
+  "short_name": "Portal Modelo",
+  "description": "Book Capoeira classes in Taunton, Somerset.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#061b36",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "1536x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
