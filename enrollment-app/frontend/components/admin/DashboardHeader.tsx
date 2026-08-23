@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -18,9 +19,13 @@ export default function DashboardHeader({ admin }: { admin: any }) {
     <header className="bg-[#061b36] text-white shadow-lg shadow-[#061b36]/15">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
         <div className="min-w-0">
-          <h1 className="truncate text-xl font-bold sm:text-3xl">
-            Portal Modelo Capoeira
-          </h1>
+          <Image
+            src="/logo.png"
+            alt="Portal Modelo logo"
+            width={220}
+            height={70}
+            className="h-auto w-[130px] sm:w-[180px]"
+          />
           <p className="text-sm text-[#f4cf59]">Admin Dashboard</p>
         </div>
 

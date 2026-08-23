@@ -21,7 +21,7 @@ export default function StudentHeader({ student, onLogout }: StudentHeaderProps)
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <Image
-              src="/logo"
+              src="/logo.png"
               alt="Portal Modelo logo"
               width={220}
               height={70}

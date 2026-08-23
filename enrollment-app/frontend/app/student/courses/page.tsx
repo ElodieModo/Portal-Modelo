@@ -122,17 +122,14 @@ export default function StudentCoursesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,161,59,0.14),_transparent_30%),linear-gradient(180deg,_#fffdf8_0%,_#f2efe9_100%)]">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(255,196,0,0.12),_transparent_30%),radial-gradient(circle_at_left,_rgba(0,122,63,0.08),_transparent_24%),linear-gradient(180deg,_#ffffff_0%,_#f5f8fb_100%)]">
       {student && <StudentHeader student={student} onLogout={handleLogout} />}
 
       <div className="mx-auto max-w-5xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
-        <div className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-5 sm:mb-6">
           <div>
             <p className="eyebrow mb-2">Classes</p>
-            <h1 className="text-3xl font-black text-[#153f35] sm:text-4xl">Available Classes</h1>
-          </div>
-          <div className="inline-flex w-fit items-center rounded-full border border-[#e8d7bf] bg-white/80 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-[#7a5a2e]">
-            next sessions
+            <h1 className="text-3xl font-black text-[#061b36] sm:text-4xl">Available Classes</h1>
           </div>
         </div>
 
@@ -149,8 +146,8 @@ export default function StudentCoursesPage() {
               onClick={() => setActiveGroup('All')}
               className={`rounded-full border px-4 py-2 text-sm font-bold transition ${
                 activeGroup === 'All'
-                  ? 'border-[#c85b3d] bg-[#c85b3d] text-white shadow-md shadow-[#c85b3d]/20'
-                  : 'border-[#e7dfd5] bg-white text-[#153f35] hover:bg-[#fffaf2]'
+                  ? 'border-[#007a3f] bg-[#007a3f] text-white shadow-md shadow-[#007a3f]/20'
+                  : 'border-[#d9e1ea] bg-white text-[#061b36] hover:bg-[#f0faf4]'
               }`}
             >
               All
@@ -162,8 +159,8 @@ export default function StudentCoursesPage() {
                 onClick={() => setActiveGroup(group)}
                 className={`rounded-full border px-4 py-2 text-sm font-bold transition ${
                   activeGroup === group
-                    ? 'border-[#c85b3d] bg-[#c85b3d] text-white shadow-md shadow-[#c85b3d]/20'
-                    : 'border-[#e7dfd5] bg-white text-[#153f35] hover:bg-[#fffaf2]'
+                    ? 'border-[#007a3f] bg-[#007a3f] text-white shadow-md shadow-[#007a3f]/20'
+                    : 'border-[#d9e1ea] bg-white text-[#061b36] hover:bg-[#f0faf4]'
                 }`}
               >
                 {group}
@@ -180,25 +177,25 @@ export default function StudentCoursesPage() {
           <div className="space-y-6">
             {visibleGroups.map(({ group, items }) => (
               <div key={group} className="space-y-4">
-                <h2 className="border-b border-[#eadfce] pb-2 text-xl font-black text-[#153f35]">{group}</h2>
+                <h2 className="border-b border-[#d9e1ea] pb-2 text-xl font-black text-[#061b36]">{group}</h2>
                 <div className="grid gap-4 sm:grid-cols-2">
                   {items.map((course) => {
                     const isBooked = bookedCourseDates.has(getCourseDateKey(course.id, course.enrollmentDate));
 
                     return (
-                      <article key={course.id} className="flex h-full flex-col rounded-2xl border border-[#e7dfd5] bg-white/90 p-4 shadow-sm shadow-[#153f35]/5 sm:p-5">
+                      <article key={course.id} className="flex h-full flex-col rounded-2xl border border-[#d9e1ea] bg-white/90 p-4 shadow-sm shadow-[#061b36]/5 sm:p-5">
                         <div className="mb-3 flex items-start justify-between gap-3">
-                          <h3 className="text-lg font-black text-[#17231f]">{course.name}</h3>
-                          <span className="rounded-full bg-[#fff7e8] px-2 py-1 text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#af7121]">
+                          <h3 className="text-lg font-black text-[#061b36]">{course.name}</h3>
+                          <span className="rounded-full bg-[#fff9df] px-2 py-1 text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#8a6800]">
                             {getCourseGroupLabel(course)}
                           </span>
                         </div>
 
                         {course.description && (
-                          <p className="mb-3 text-sm leading-6 text-[#4d5d59]">{course.description}</p>
+                          <p className="mb-3 text-sm leading-6 text-[#526174]">{course.description}</p>
                         )}
 
-                        <div className="space-y-2 text-sm text-[#28413c]">
+                        <div className="space-y-2 text-sm text-[#0c2b4d]">
                           <p>📅 {new Date(course.enrollmentDate).toLocaleDateString('en-GB')}</p>
                           <p>⏰ {course.startTime} - {course.endTime}</p>
                           <p>💷 £{course.pricePerHour}/hour (adult) · £{course.childPricePerHour}/hour (14 & under)</p>
@@ -211,7 +208,7 @@ export default function StudentCoursesPage() {
                           className={`mt-5 w-full rounded-xl px-4 py-3 text-sm font-black transition ${
                             isBooked
                               ? 'cursor-not-allowed bg-[#dbe7e4] text-[#153f35]'
-                              : 'bg-[#c85b3d] text-white shadow-md shadow-[#c85b3d]/20 hover:bg-[#a9472d]'
+                              : 'bg-[#007a3f] text-white shadow-md shadow-[#007a3f]/20 hover:bg-[#005f32]'
                           }`}
                         >
                           {isBooked ? 'Already booked' : 'Book this class'}

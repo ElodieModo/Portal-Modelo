@@ -82,7 +82,7 @@ export default function AdminDashboard() {
         {tab === 'courses' && <CourseList />}
         {tab === 'enrollments' && (
           <div className="overflow-hidden rounded-2xl border border-[#e7dfd5] bg-white/85 p-4 shadow-sm sm:p-6">
-            <h2 className="mb-4 text-xl font-black text-[#153f35]">All Enrollments</h2>
+            <h2 className="mb-4 text-xl font-black text-[#061b36]">All Enrollments</h2>
             <EnrollmentList />
           </div>
         )}
@@ -129,20 +129,20 @@ function EnrollmentList() {
     <div className="overflow-x-auto">
       {groupedEnrollments.map(({ group, enrollments: categoryEnrollments }) => (
         <section key={group} className="mb-8 last:mb-0">
-          <h3 className="mb-3 text-lg font-black text-[#153f35]">{group}</h3>
+          <h3 className="mb-3 text-lg font-black text-[#061b36]">{group}</h3>
           {categoryEnrollments.length === 0 ? (
             <p className="text-sm text-[#64716c]">No enrollments in this category.</p>
           ) : (
             <table className="w-full min-w-[760px] text-sm">
               <thead className="border-b border-[#e7dfd5] bg-[#f9f5ee]">
                 <tr>
-                  <th className="px-4 py-2 text-left font-bold text-[#153f35]">Student</th>
-                  <th className="px-4 py-2 text-left font-bold text-[#153f35]">Email</th>
-                  <th className="px-4 py-2 text-left font-bold text-[#153f35]">Course</th>
-                  <th className="px-4 py-2 text-left font-bold text-[#153f35]">Course date</th>
-                  <th className="px-4 py-2 text-left font-bold text-[#153f35]">Participants</th>
-                  <th className="px-4 py-2 text-left font-bold text-[#153f35]">Status</th>
-                  <th className="px-4 py-2 text-left font-bold text-[#153f35]">Enrolled</th>
+                  <th className="px-4 py-2 text-left font-bold text-[#061b36]">Student</th>
+                  <th className="px-4 py-2 text-left font-bold text-[#061b36]">Email</th>
+                  <th className="px-4 py-2 text-left font-bold text-[#061b36]">Course</th>
+                  <th className="px-4 py-2 text-left font-bold text-[#061b36]">Course date</th>
+                  <th className="px-4 py-2 text-left font-bold text-[#061b36]">Participants</th>
+                  <th className="px-4 py-2 text-left font-bold text-[#061b36]">Status</th>
+                  <th className="px-4 py-2 text-left font-bold text-[#061b36]">Enrolled</th>
                 </tr>
               </thead>
               <tbody>
