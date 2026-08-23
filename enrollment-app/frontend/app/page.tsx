@@ -26,14 +26,6 @@ export default function HomePage() {
               A welcoming space for capoeira practice, Brazilian culture and the people who keep the roda alive.
             </p>
 
-            <div className="mx-auto mt-7 flex w-full max-w-md flex-col gap-3 sm:flex-row">
-              <Link href="/student/login" className="primary-button inline-flex items-center justify-center text-center">
-                Student access
-              </Link>
-              <Link href="/admin/login" className="secondary-button inline-flex items-center justify-center text-center">
-                Admin access
-              </Link>
-            </div>
           </div>
         </section>
 
@@ -43,6 +35,9 @@ export default function HomePage() {
             <p className="eyebrow">For practitioners</p>
             <h2>Enter the roda</h2>
             <p>Book a class, meet your community and keep your practice moving.</p>
+            <Link href="/student/login" className="primary-button mt-auto text-center">
+              Student access
+            </Link>
           </div>
 
           <div className="feature-card feature-card--dark">
@@ -50,6 +45,9 @@ export default function HomePage() {
             <p className="eyebrow eyebrow--light">For the team</p>
             <h2>Shape the rhythm</h2>
             <p>Manage sessions, attendance and the next chapter of the school.</p>
+            <Link href="/admin/login" className="secondary-button secondary-button--light mt-auto text-center">
+              Admin access
+            </Link>
           </div>
         </section>
       </div>
