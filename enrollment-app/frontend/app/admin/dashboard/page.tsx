@@ -52,11 +52,11 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,161,59,0.12),_transparent_28%),linear-gradient(180deg,_#fffdf8_0%,_#f2efe9_100%)]">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(255,196,0,0.12),_transparent_24%),radial-gradient(circle_at_right,_rgba(0,122,63,0.08),_transparent_28%),linear-gradient(180deg,_#ffffff_0%,_#f5f8fb_100%)]">
       <DashboardHeader admin={admin} />
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
-        <div className="mb-6 flex gap-1 overflow-x-auto border-b border-[#dedbd2] pb-1 sm:gap-4">
+        <div className="mb-6 flex gap-1 overflow-x-auto border-b border-[#dfe7ef] pb-1 sm:gap-4">
           {[
             ['overview', '📊 Overview'],
             ['courses', '📅 Courses'],
@@ -69,8 +69,8 @@ export default function AdminDashboard() {
               onClick={() => setTab(value as 'overview' | 'courses' | 'enrollments' | 'finance')}
               className={`shrink-0 px-3 py-2 text-sm font-bold sm:px-4 ${
                 tab === value
-                  ? 'border-b-2 border-[#c85b3d] text-[#c85b3d]'
-                  : 'text-[#4d5d59] hover:text-[#153f35]'
+                  ? 'border-b-2 border-[#007a3f] text-[#007a3f]'
+                  : 'text-[#526174] hover:text-[#061b36]'
               }`}
             >
               {label}
