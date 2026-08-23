@@ -39,13 +39,14 @@ export default function StudentLoginPage() {
           <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">{error}</div>
         )}
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} noValidate>
           <div className="mb-4">
             <label className="block text-gray-700 font-semibold mb-2">Email</label>
             <input
-              type="email"
+              type="text"
+              inputMode="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value.trim())}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none"
               placeholder="you@example.com"

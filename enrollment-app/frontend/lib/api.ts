@@ -1,5 +1,7 @@
-// API client configuration
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+// Use the public Render API in production; keep the local proxy for development.
+const API_URL = process.env.NODE_ENV === 'production'
+  ? 'https://portal-modelo.onrender.com/api'
+  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api');
 
 export interface ApiResponse<T> {
   data?: T;
