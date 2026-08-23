@@ -5,6 +5,15 @@ import { PrismaClient } from '@prisma/client';
 
 dotenv.config();
 
+if (process.env.DATABASE_URL) {
+  const databaseUrl = new URL(process.env.DATABASE_URL);
+  if (databaseUrl.port === '6543') {
+    databaseUrl.searchParams.set('pgbouncer', 'true');
+    databaseUrl.searchParams.set('connection_limit', '1');
+    process.env.DATABASE_URL = databaseUrl.toString();
+  }
+}
+
 const app = express();
 const prisma = new PrismaClient();
 const allowedOrigins = [
@@ -48,12 +57,16 @@ app.use((err: any, req: express.Request, res: express.Response, _next: express.N
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`✅ Portal Modelo Capoeira API running on http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`✅ Portal Modelo Capoeira API running on http://localhost:${PORT}`);
+  });
+}
 
 // Handle shutdown gracefully
 process.on('SIGINT', async () => {
   await prisma.$disconnect();
   process.exit(0);
 });
+
+export default app;
