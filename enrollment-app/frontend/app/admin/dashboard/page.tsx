@@ -15,7 +15,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<'overview' | 'courses' | 'enrollments' | 'finance'>('overview');
 
-   useEffect(() => {
+  useEffect(() => {
     const checkAdmin = async () => {
       try {
         const response = await apiClient.getAdminProfile();
@@ -38,10 +38,10 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(226,161,59,0.12),_transparent_28%),linear-gradient(180deg,_#fffdf8_0%,_#f2efe9_100%)]">
         <div className="text-center">
-          <div className="animate-spin text-4xl mb-4">🥁</div>
-          <p className="text-gray-600">Loading dashboard...</p>
+          <div className="mb-4 text-4xl">🥁</div>
+          <p className="text-sm font-medium text-[#64716c]">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -52,60 +52,37 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,161,59,0.12),_transparent_28%),linear-gradient(180deg,_#fffdf8_0%,_#f2efe9_100%)]">
       <DashboardHeader admin={admin} />
 
-      <div className="max-w-7xl mx-auto p-6">
-        {/* Tab Navigation */}
-        <div className="flex gap-4 mb-6 border-b">
-          <button
-            onClick={() => setTab('overview')}
-            className={`px-4 py-2 font-semibold ${
-              tab === 'overview'
-                ? 'text-amber-600 border-b-2 border-amber-600'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            📊 Overview
-          </button>
-          <button
-            onClick={() => setTab('courses')}
-            className={`px-4 py-2 font-semibold ${
-              tab === 'courses'
-                ? 'text-amber-600 border-b-2 border-amber-600'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            📅 Courses
-          </button>
-          <button
-            onClick={() => setTab('enrollments')}
-            className={`px-4 py-2 font-semibold ${
-              tab === 'enrollments'
-                ? 'text-amber-600 border-b-2 border-amber-600'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            👥 Enrollments
-          </button>
-          <button
-            onClick={() => setTab('finance')}
-            className={`px-4 py-2 font-semibold ${
-              tab === 'finance'
-                ? 'text-amber-600 border-b-2 border-amber-600'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            💷 Finance
-          </button>
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
+        <div className="mb-6 flex gap-1 overflow-x-auto border-b border-[#dedbd2] pb-1 sm:gap-4">
+          {[
+            ['overview', '📊 Overview'],
+            ['courses', '📅 Courses'],
+            ['enrollments', '👥 Enrollments'],
+            ['finance', '💷 Finance'],
+          ].map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setTab(value as 'overview' | 'courses' | 'enrollments' | 'finance')}
+              className={`shrink-0 px-3 py-2 text-sm font-bold sm:px-4 ${
+                tab === value
+                  ? 'border-b-2 border-[#c85b3d] text-[#c85b3d]'
+                  : 'text-[#4d5d59] hover:text-[#153f35]'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
-        {/* Tab Content */}
         {tab === 'overview' && <EnrollmentStats />}
         {tab === 'courses' && <CourseList />}
         {tab === 'enrollments' && (
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-4">All Enrollments</h2>
+          <div className="overflow-hidden rounded-2xl border border-[#e7dfd5] bg-white/85 p-4 shadow-sm sm:p-6">
+            <h2 className="mb-4 text-xl font-black text-[#153f35]">All Enrollments</h2>
             <EnrollmentList />
           </div>
         )}
@@ -120,7 +97,7 @@ function EnrollmentList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-        const fetchEnrollments = async () => {
+    const fetchEnrollments = async () => {
       try {
         const response = await apiClient.getAllEnrollments();
 
@@ -129,7 +106,7 @@ function EnrollmentList() {
         } else {
           setEnrollments([]);
         }
-        } finally {
+      } finally {
         setLoading(false);
       }
     };
@@ -137,7 +114,7 @@ function EnrollmentList() {
     fetchEnrollments();
   }, []);
 
-  if (loading) return <p>Loading enrollments...</p>;
+  if (loading) return <p className="text-sm text-[#64716c]">Loading enrollments...</p>;
 
   const groupedEnrollments = COURSE_GROUPS.map((group) => ({
     group,
@@ -152,63 +129,63 @@ function EnrollmentList() {
     <div className="overflow-x-auto">
       {groupedEnrollments.map(({ group, enrollments: categoryEnrollments }) => (
         <section key={group} className="mb-8 last:mb-0">
-          <h3 className="text-lg font-bold text-amber-800 mb-3">{group}</h3>
+          <h3 className="mb-3 text-lg font-black text-[#153f35]">{group}</h3>
           {categoryEnrollments.length === 0 ? (
-            <p className="text-sm text-gray-500">No enrollments in this category.</p>
+            <p className="text-sm text-[#64716c]">No enrollments in this category.</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead className="bg-gray-100 border-b">
+            <table className="w-full min-w-[760px] text-sm">
+              <thead className="border-b border-[#e7dfd5] bg-[#f9f5ee]">
                 <tr>
-                  <th className="px-4 py-2 text-left">Student</th>
-                  <th className="px-4 py-2 text-left">Email</th>
-                  <th className="px-4 py-2 text-left">Course</th>
-                  <th className="px-4 py-2 text-left">Course date</th>
-                  <th className="px-4 py-2 text-left">Participants</th>
-                  <th className="px-4 py-2 text-left">Status</th>
-                  <th className="px-4 py-2 text-left">Enrolled</th>
+                  <th className="px-4 py-2 text-left font-bold text-[#153f35]">Student</th>
+                  <th className="px-4 py-2 text-left font-bold text-[#153f35]">Email</th>
+                  <th className="px-4 py-2 text-left font-bold text-[#153f35]">Course</th>
+                  <th className="px-4 py-2 text-left font-bold text-[#153f35]">Course date</th>
+                  <th className="px-4 py-2 text-left font-bold text-[#153f35]">Participants</th>
+                  <th className="px-4 py-2 text-left font-bold text-[#153f35]">Status</th>
+                  <th className="px-4 py-2 text-left font-bold text-[#153f35]">Enrolled</th>
                 </tr>
               </thead>
               <tbody>
                 {categoryEnrollments.map((enrollment) => (
-                  <tr key={enrollment.id} className="border-b hover:bg-gray-50">
-              <td className="px-4 py-2">
-                {enrollment.student.firstName} {enrollment.student.lastName}
-              </td>
-              <td className="px-4 py-2">{enrollment.student.email}</td>
-              <td className="px-4 py-2">{enrollment.course.name}</td>
-              <td className="px-4 py-2 whitespace-nowrap">
-                <div>{new Date(enrollment.enrollmentDate).toLocaleDateString()}</div>
-                <div className="text-xs text-gray-500">
-                  {enrollment.course.startTime} - {enrollment.course.endTime}
-                </div>
-              </td>
-              <td className="px-4 py-2">
-                {Array.isArray(enrollment.participants) && enrollment.participants.length > 0 ? (
-                  <ul className="space-y-1">
-                    {enrollment.participants.map((participant: any) => (
-                      <li key={participant.id} className="text-xs text-gray-700">
-                        {participant.firstName} {participant.lastName} ({participant.age} yrs)
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <span className="text-xs text-gray-500">No participants</span>
-                )}
-              </td>
-              <td className="px-4 py-2">
-                <span
-                  className={`px-2 py-1 rounded text-xs font-semibold ${
-                    enrollment.status === 'ACTIVE'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}
-                >
-                  {enrollment.status}
-                </span>
-              </td>
-              <td className="px-4 py-2">
-                {new Date(enrollment.enrolledAt).toLocaleDateString()}
-              </td>
+                  <tr key={enrollment.id} className="border-b border-[#f0e9e1] hover:bg-[#fffaf2]">
+                    <td className="px-4 py-2 text-[#17231f]">
+                      {enrollment.student.firstName} {enrollment.student.lastName}
+                    </td>
+                    <td className="px-4 py-2 text-[#4d5d59]">{enrollment.student.email}</td>
+                    <td className="px-4 py-2 text-[#17231f]">{enrollment.course.name}</td>
+                    <td className="whitespace-nowrap px-4 py-2 text-[#4d5d59]">
+                      <div>{new Date(enrollment.enrollmentDate).toLocaleDateString()}</div>
+                      <div className="text-xs text-[#64716c]">
+                        {enrollment.course.startTime} - {enrollment.course.endTime}
+                      </div>
+                    </td>
+                    <td className="px-4 py-2 text-[#4d5d59]">
+                      {Array.isArray(enrollment.participants) && enrollment.participants.length > 0 ? (
+                        <ul className="space-y-1">
+                          {enrollment.participants.map((participant: any) => (
+                            <li key={participant.id} className="text-xs">
+                              {participant.firstName} {participant.lastName} ({participant.age} yrs)
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <span className="text-xs text-[#64716c]">No participants</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2">
+                      <span
+                        className={`rounded-full px-2 py-1 text-xs font-bold ${
+                          enrollment.status === 'ACTIVE'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-700'
+                        }`}
+                      >
+                        {enrollment.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2 text-[#4d5d59]">
+                      {new Date(enrollment.enrolledAt).toLocaleDateString()}
+                    </td>
                   </tr>
                 ))}
               </tbody>

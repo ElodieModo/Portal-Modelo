@@ -97,8 +97,8 @@ export default function EnrollmentModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
+      <div className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-lg bg-white shadow-xl">
+        <div className="p-4 sm:p-6">
           <h2 className="text-xl font-bold text-gray-800 mb-1">Book a class: {course.name}</h2>
           <p className="text-xs font-semibold text-green-700 bg-green-50 rounded px-2 py-1 inline-block mb-2">
             🎉 First-time students: your first class is free!
@@ -131,7 +131,7 @@ export default function EnrollmentModal({
             {participants.map((participant, index) => (
               <div key={index} className="border border-gray-200 rounded-lg p-3">
                 <p className="text-sm font-semibold text-gray-600 mb-2">Student {index + 1}</p>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                   <input
                     type="text"
                     placeholder="First name"

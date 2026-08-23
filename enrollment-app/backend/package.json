@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "create-admin": "ts-node scripts/create-admin.ts",
+    "reset-admin-password": "ts-node scripts/reset-admin-password.ts",
     "lint": "eslint src --ext .ts",
     "test": "jest",
     "db:migrate": "prisma migrate dev",
