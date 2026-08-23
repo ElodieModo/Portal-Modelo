@@ -145,12 +145,14 @@ button, input, select, textarea {
   }
 
   .feature-card--light {
-    background: rgba(255, 255, 255, 0.82);
+    background: linear-gradient(145deg, #effaf3 0%, #dff2e7 100%);
+    border-color: rgba(0, 122, 63, 0.28);
     color: var(--ink);
   }
 
   .feature-card--dark {
     background: linear-gradient(180deg, #061b36 0%, #0a2a51 100%);
+    border-color: rgba(255, 196, 0, 0.42);
     color: white;
   }
 
