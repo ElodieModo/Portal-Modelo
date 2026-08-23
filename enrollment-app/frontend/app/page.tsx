@@ -25,6 +25,9 @@ export default function HomePage() {
             <p className="mx-auto max-w-lg text-base leading-7 text-[#4d5d59] sm:text-lg sm:leading-8">
               A welcoming space for capoeira practice, Brazilian culture and the people who keep the roda alive.
             </p>
+            <p className="mx-auto mt-4 max-w-lg text-sm font-bold leading-6 text-[#007a3f] sm:text-base">
+              Classes in Taunton, Somerset, led by Professor Modo.
+            </p>
 
           </div>
         </section>
