@@ -422,6 +422,7 @@ We look forward to seeing you in the roda!
       const fromName = process.env.SMTP_FROM_NAME || 'Portal Modelo Capoeira';
 
       if (sendGridApiKey && fromEmail) {
+        console.log(`Sending email via SendGrid API to ${options.to}`);
         const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
           method: 'POST',
           headers: {
@@ -441,14 +442,16 @@ We look forward to seeing you in the roda!
 
         if (!response.ok) {
           const details = await response.text();
+          console.error(`SendGrid API rejected email with status ${response.status}: ${details}`);
           throw new Error(`SendGrid API ${response.status}: ${details}`);
         }
 
+        console.log(`Email accepted by SendGrid for ${options.to}`);
         return { success: true, message: 'Email accepted by SendGrid' };
       }
 
       if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-        console.warn('Email service not configured. Skipping email:', options.to);
+        console.warn(`Email service not configured for ${options.to}`);
         return { success: false, message: 'Email service not configured' };
       }
 
@@ -460,7 +463,7 @@ We look forward to seeing you in the roda!
         text: options.text
       });
 
-      console.log('Email sent:', info.messageId);
+      console.log(`Email sent via SMTP to ${options.to}: ${info.messageId}`);
       return { success: true, messageId: info.messageId };
     } catch (error) {
       console.error('Error sending email:', error);
