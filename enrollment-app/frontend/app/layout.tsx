@@ -7,8 +7,16 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
   themeColor: '#061b36',
   icons: {
-    icon: '/32295424-1BB4-4B01-91BB-84F9FE60FDC1.png',
-    apple: '/32295424-1BB4-4B01-91BB-84F9FE60FDC1.png',
+    icon: [{
+      url: '/32295424-1BB4-4B01-91BB-84F9FE60FDC1.png?v=2',
+      type: 'image/png',
+      sizes: '1254x1254',
+    }],
+    apple: [{
+      url: '/32295424-1BB4-4B01-91BB-84F9FE60FDC1.png?v=2',
+      type: 'image/png',
+      sizes: '1254x1254',
+    }],
   },
 };
 

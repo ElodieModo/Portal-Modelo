@@ -21,11 +21,11 @@ export default function StudentHeader({ student, onLogout }: StudentHeaderProps)
         <div className="min-w-0">
           <div className="flex items-center gap-2.5">
             <Image
-              src="/logo.png"
+              src="/32295424-1BB4-4B01-91BB-84F9FE60FDC1.png"
               alt=""
-              width={220}
-              height={70}
-              className="h-auto w-[82px] sm:w-[112px]"
+              width={1254}
+              height={1254}
+              className="h-auto w-[42px] sm:w-[52px]"
             />
             <div className="min-w-0">
               <h1 className="truncate text-lg font-black leading-tight sm:text-2xl">Portal Modelo Capoeira</h1>

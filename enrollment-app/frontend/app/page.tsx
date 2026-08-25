@@ -8,10 +8,10 @@ export default function HomePage() {
         <section className="fade-up flex flex-col items-center text-center">
           <div className="mb-2 flex justify-center rounded-xl bg-white px-5 py-3 sm:mb-3 sm:px-6 sm:py-4">
             <Image
-              src="/32295424-1BB4-4B01-91BB-84F9FE60FDC1.png"
+              src="/logo.png"
               alt="Portal Modelo logo"
-              width={1254}
-              height={1254}
+              width={1536}
+              height={1024}
               priority
               className="h-auto w-full max-w-[18rem]"
             />
