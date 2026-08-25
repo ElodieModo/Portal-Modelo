@@ -117,6 +117,23 @@ class ApiClient {
     });
   }
 
+  async getExpenses() {
+    return this.request('/dashboard/finance/expenses');
+  }
+
+  async createExpense(expenseData: { category: string; description: string; amount: number; date: string }) {
+    return this.request('/dashboard/finance/expenses', {
+      method: 'POST',
+      body: JSON.stringify(expenseData),
+    });
+  }
+
+  async deleteExpense(expenseId: string) {
+    return this.request(`/dashboard/finance/expenses/${expenseId}`, {
+      method: 'DELETE',
+    });
+  }
+
   async getCourseEnrollments(courseId: string) {
     return this.request(`/dashboard/enrollments/course/${courseId}`);
   }

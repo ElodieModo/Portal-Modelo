@@ -15,20 +15,44 @@ interface FinanceEnrollment {
   participants: { id: string; firstName: string; lastName: string }[];
 }
 
+interface Expense {
+  id: string;
+  category: 'ROOM' | 'EQUIPMENT' | 'MISCELLANEOUS';
+  description: string;
+  amount: number;
+  date: string;
+}
+
 const formatAmount = (amount: number) => `£${amount.toFixed(2)}`;
 
 export default function FinancePanel() {
   const [enrollments, setEnrollments] = useState<FinanceEnrollment[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [expenseForm, setExpenseForm] = useState({
+    category: 'ROOM' as Expense['category'],
+    description: '',
+    amount: '',
+    date: new Date().toISOString().slice(0, 10),
+  });
   const [loading, setLoading] = useState(true);
+  const [expenseSaving, setExpenseSaving] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     const loadFinance = async () => {
-      const response = await apiClient.getFinanceEnrollments();
-      if (!response.error && Array.isArray(response.data)) {
-        setEnrollments(response.data);
+      const [enrollmentResponse, expenseResponse] = await Promise.all([
+        apiClient.getFinanceEnrollments(),
+        apiClient.getExpenses(),
+      ]);
+      if (!enrollmentResponse.error && Array.isArray(enrollmentResponse.data)) {
+        setEnrollments(enrollmentResponse.data);
       } else {
-        setError(response.error || 'Failed to load finance data');
+        setError(enrollmentResponse.error || 'Failed to load finance data');
+      }
+      if (!expenseResponse.error && Array.isArray(expenseResponse.data)) {
+        setExpenses(expenseResponse.data);
+      } else {
+        setError(expenseResponse.error || 'Failed to load expenses');
       }
       setLoading(false);
     };
@@ -43,6 +67,36 @@ export default function FinancePanel() {
       .reduce((sum, enrollment) => sum + enrollment.expectedAmount, 0);
     return { expected, received, outstanding: expected - received };
   }, [enrollments]);
+
+  const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const balance = totals.received - totalExpenses;
+
+  const handleExpenseSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setExpenseSaving(true);
+    setError('');
+    const response = await apiClient.createExpense({
+      ...expenseForm,
+      amount: Number(expenseForm.amount),
+    });
+    if (response.error) {
+      setError(response.error);
+    } else if (response.data) {
+      setExpenses((current) => [response.data as Expense, ...current]);
+      setExpenseForm((current) => ({ ...current, description: '', amount: '' }));
+    }
+    setExpenseSaving(false);
+  };
+
+  const handleExpenseDelete = async (expense: Expense) => {
+    if (!confirm(`Delete expense "${expense.description}"?`)) return;
+    const response = await apiClient.deleteExpense(expense.id);
+    if (response.error) {
+      setError(response.error);
+    } else {
+      setExpenses((current) => current.filter((item) => item.id !== expense.id));
+    }
+  };
 
   const groupedEnrollments = useMemo(() => {
     const groups = new Map<string, FinanceEnrollment[]>();
@@ -103,10 +157,109 @@ export default function FinancePanel() {
           <p className="text-3xl font-bold text-green-600">{formatAmount(totals.received)}</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-sm text-gray-600">Outstanding</p>
-          <p className="text-3xl font-bold text-red-600">{formatAmount(totals.outstanding)}</p>
+          <p className="text-sm text-gray-600">Balance after expenses</p>
+          <p className={`text-3xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>{formatAmount(balance)}</p>
         </div>
       </div>
+
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+        <form onSubmit={handleExpenseSubmit} className="bg-white p-6 rounded-lg shadow space-y-4">
+          <div>
+            <h2 className="text-xl font-bold text-gray-800">Add an expense</h2>
+            <p className="text-sm text-gray-600 mt-1">Record room hire, equipment or other association costs.</p>
+          </div>
+          <div>
+            <label htmlFor="expense-category" className="block text-sm font-semibold text-gray-700 mb-1">Category</label>
+            <select
+              id="expense-category"
+              value={expenseForm.category}
+              onChange={(event) => setExpenseForm((current) => ({ ...current, category: event.target.value as Expense['category'] }))}
+              className="w-full border border-gray-300 rounded px-3 py-2"
+            >
+              <option value="ROOM">Room payment</option>
+              <option value="EQUIPMENT">Equipment</option>
+              <option value="MISCELLANEOUS">Miscellaneous</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="expense-description" className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+            <input
+              id="expense-description"
+              required
+              value={expenseForm.description}
+              onChange={(event) => setExpenseForm((current) => ({ ...current, description: event.target.value }))}
+              className="w-full border border-gray-300 rounded px-3 py-2"
+              placeholder="e.g. September hall hire"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="expense-amount" className="block text-sm font-semibold text-gray-700 mb-1">Amount (£)</label>
+              <input
+                id="expense-amount"
+                required
+                min="0.01"
+                step="0.01"
+                type="number"
+                value={expenseForm.amount}
+                onChange={(event) => setExpenseForm((current) => ({ ...current, amount: event.target.value }))}
+                className="w-full border border-gray-300 rounded px-3 py-2"
+              />
+            </div>
+            <div>
+              <label htmlFor="expense-date" className="block text-sm font-semibold text-gray-700 mb-1">Date</label>
+              <input
+                id="expense-date"
+                required
+                type="date"
+                value={expenseForm.date}
+                onChange={(event) => setExpenseForm((current) => ({ ...current, date: event.target.value }))}
+                className="w-full border border-gray-300 rounded px-3 py-2"
+              />
+            </div>
+          </div>
+          <button type="submit" disabled={expenseSaving} className="w-full rounded bg-amber-600 px-4 py-2 font-semibold text-white hover:bg-amber-700 disabled:opacity-60">
+            {expenseSaving ? 'Saving...' : 'Add expense'}
+          </button>
+        </form>
+
+        <section className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b bg-gray-50 px-6 py-4">
+            <h2 className="text-xl font-bold text-gray-800">Expenses</h2>
+            <p className="font-bold text-red-600">{formatAmount(totalExpenses)}</p>
+          </div>
+          {expenses.length === 0 ? (
+            <p className="p-6 text-gray-600">No expenses recorded.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="border-b">
+                  <tr>
+                    <th className="px-6 py-3 text-left">Date</th>
+                    <th className="px-6 py-3 text-left">Category</th>
+                    <th className="px-6 py-3 text-left">Description</th>
+                    <th className="px-6 py-3 text-right">Amount</th>
+                    <th className="px-6 py-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {expenses.map((expense) => (
+                    <tr key={expense.id} className="border-b last:border-b-0">
+                      <td className="px-6 py-3">{new Date(`${expense.date.slice(0, 10)}T12:00:00`).toLocaleDateString()}</td>
+                      <td className="px-6 py-3">{expense.category === 'ROOM' ? 'Room payment' : expense.category === 'EQUIPMENT' ? 'Equipment' : 'Miscellaneous'}</td>
+                      <td className="px-6 py-3">{expense.description}</td>
+                      <td className="px-6 py-3 text-right font-semibold">{formatAmount(expense.amount)}</td>
+                      <td className="px-6 py-3 text-right">
+                        <button type="button" onClick={() => handleExpenseDelete(expense)} className="text-red-600 hover:text-red-800">Delete</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      </section>
 
       {groupedEnrollments.length === 0 ? (
         <div className="bg-white p-6 rounded-lg shadow text-gray-600">No active enrollments.</div>

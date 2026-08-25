@@ -186,6 +186,62 @@ router.get('/finance', adminOnly, async (req: AuthRequest, res: Response) => {
   }
 });
 
+router.get('/finance/expenses', adminOnly, async (req: AuthRequest, res: Response) => {
+  try {
+    const expenses = await prisma.expense.findMany({
+      orderBy: [{ date: 'desc' }, { createdAt: 'desc' }]
+    });
+
+    res.json(expenses);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch expenses' });
+  }
+});
+
+router.post('/finance/expenses', adminOnly, async (req: AuthRequest, res: Response) => {
+  try {
+    const { category, description, amount, date } = req.body;
+    const parsedAmount = typeof amount === 'number' ? amount : Number(amount);
+
+    if (!['ROOM', 'EQUIPMENT', 'MISCELLANEOUS'].includes(category)) {
+      return res.status(400).json({ error: 'Invalid expense category' });
+    }
+    if (typeof description !== 'string' || !description.trim()) {
+      return res.status(400).json({ error: 'Expense description is required' });
+    }
+    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+      return res.status(400).json({ error: 'Expense amount must be greater than zero' });
+    }
+
+    const expenseDate = date ? new Date(date) : new Date();
+    if (Number.isNaN(expenseDate.getTime())) {
+      return res.status(400).json({ error: 'Invalid expense date' });
+    }
+
+    const expense = await prisma.expense.create({
+      data: {
+        category,
+        description: description.trim(),
+        amount: parsedAmount,
+        date: expenseDate
+      }
+    });
+
+    res.status(201).json(expense);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create expense' });
+  }
+});
+
+router.delete('/finance/expenses/:expenseId', adminOnly, async (req: AuthRequest, res: Response) => {
+  try {
+    await prisma.expense.delete({ where: { id: req.params.expenseId } });
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete expense' });
+  }
+});
+
 /**
  * Mark an enrollment payment as received or pending
  */
