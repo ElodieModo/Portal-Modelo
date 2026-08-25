@@ -4,9 +4,9 @@ import Link from 'next/link';
 export default function HomePage() {
   return (
     <main className="page-shell">
-      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+      <div className="mx-auto w-full max-w-5xl px-4 py-3 sm:px-6 lg:px-8 lg:py-5">
         <section className="fade-up flex flex-col items-center text-center">
-          <div className="mb-5 flex justify-center sm:mb-6">
+          <div className="mb-2 flex justify-center sm:mb-3">
             <Image
               src="/logo.png"
               alt="Portal Modelo logo"
@@ -19,7 +19,7 @@ export default function HomePage() {
 
         </section>
 
-        <section className="fade-up mx-auto mt-8 grid w-full max-w-2xl gap-4 sm:grid-cols-2" style={{ animationDelay: '120ms' }}>
+        <section className="fade-up mx-auto mt-4 grid w-full max-w-2xl gap-4 sm:grid-cols-2" style={{ animationDelay: '120ms' }}>
           <div className="feature-card feature-card--light">
             <p className="eyebrow">For practitioners</p>
             <h2>Enter the roda</h2>
