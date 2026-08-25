@@ -6,14 +6,14 @@ export default function HomePage() {
     <main className="page-shell">
       <div className="mx-auto w-full max-w-5xl px-4 py-3 sm:px-6 lg:px-8 lg:py-5">
         <section className="fade-up flex flex-col items-center text-center">
-          <div className="mb-2 flex justify-center sm:mb-3">
+          <div className="mb-2 flex justify-center rounded-xl bg-white px-5 py-3 sm:mb-3 sm:px-6 sm:py-4">
             <Image
               src="/logo.png"
               alt="Portal Modelo logo"
               width={700}
               height={220}
               priority
-              className="h-auto w-full max-w-[24rem]"
+              className="h-auto w-full max-w-[18rem]"
             />
           </div>
 
