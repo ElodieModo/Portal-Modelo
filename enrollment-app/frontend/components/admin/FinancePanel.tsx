@@ -132,7 +132,7 @@ export default function FinancePanel() {
                   <thead className="border-b">
                     <tr>
                       <th className="px-6 py-3 text-left">Student</th>
-                      <th className="px-6 py-3 text-left">Course</th>
+                      <th className="px-6 py-3 text-left">Class</th>
                       <th className="px-6 py-3 text-left">Participants</th>
                       <th className="px-6 py-3 text-left">Expected</th>
                       <th className="px-6 py-3 text-left">Free</th>

@@ -59,7 +59,7 @@ export default function AdminDashboard() {
         <div className="mb-6 flex gap-1 overflow-x-auto border-b border-[#dfe7ef] pb-1 sm:gap-4">
           {[
             ['overview', '📊 Overview'],
-            ['courses', '📅 Courses'],
+            ['courses', '📅 Classes'],
             ['enrollments', '👥 Enrollments'],
             ['finance', '💷 Finance'],
           ].map(([value, label]) => (

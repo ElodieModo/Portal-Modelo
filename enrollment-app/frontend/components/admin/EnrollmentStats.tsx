@@ -108,7 +108,7 @@ export default function EnrollmentStats() {
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="text-3xl font-bold text-amber-600">{stats.totalCourses}</div>
-          <p className="text-gray-600 mt-2">Total Courses</p>
+          <p className="text-gray-600 mt-2">Total Classes</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="text-3xl font-bold text-orange-600">{stats.totalSessions}</div>
@@ -128,7 +128,7 @@ export default function EnrollmentStats() {
         </div>
       </div>
 
-      {/* Courses Overview */}
+      {/* Classes Overview */}
       <div className="bg-white p-6 rounded-lg shadow">
         <div className="flex flex-wrap items-end gap-4 mb-6">
           <div>
@@ -174,7 +174,7 @@ export default function EnrollmentStats() {
             />
           </div>
         </div>
-        <h2 className="text-xl font-bold mb-4">Course Status</h2>
+        <h2 className="text-xl font-bold mb-4">Class Status</h2>
         <div className="space-y-3">
           {sortedCourseDates.map(({ course, date }: { course: any; date: string | null }) => {
             const dateKey = date ? date.slice(0, 10) : null;

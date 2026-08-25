@@ -17,24 +17,10 @@ export default function HomePage() {
             />
           </div>
 
-          <div className="max-w-2xl">
-            <h1 className="display-title mb-4 text-4xl font-black text-[#061b36] sm:text-5xl lg:text-6xl">
-              Move with <span className="text-[#007a3f]">intention.</span>
-            </h1>
-
-            <p className="mx-auto max-w-lg text-base leading-7 text-[#4d5d59] sm:text-lg sm:leading-8">
-              A welcoming space for capoeira practice, Brazilian culture and the people who keep the roda alive.
-            </p>
-            <p className="mx-auto mt-4 max-w-lg text-sm font-bold leading-6 text-[#007a3f] sm:text-base">
-              Classes in Taunton, Somerset, led by Professor Modo.
-            </p>
-
-          </div>
         </section>
 
-        <section className="fade-up mx-auto mt-10 grid w-full max-w-3xl gap-4 sm:grid-cols-2" style={{ animationDelay: '120ms' }}>
+        <section className="fade-up mx-auto mt-8 grid w-full max-w-2xl gap-4 sm:grid-cols-2" style={{ animationDelay: '120ms' }}>
           <div className="feature-card feature-card--light">
-            <span className="feature-icon" aria-hidden="true">◌</span>
             <p className="eyebrow">For practitioners</p>
             <h2>Enter the roda</h2>
             <p>Book a class, meet your community and keep your practice moving.</p>
@@ -44,7 +30,6 @@ export default function HomePage() {
           </div>
 
           <div className="feature-card feature-card--dark">
-            <span className="feature-icon" aria-hidden="true">✦</span>
             <p className="eyebrow eyebrow--light">For the team</p>
             <h2>Shape the rhythm</h2>
             <p>Manage sessions, attendance and the next chapter of the school.</p>
@@ -52,6 +37,19 @@ export default function HomePage() {
               Admin access
             </Link>
           </div>
+        </section>
+
+        <section className="fade-up mx-auto mt-8 max-w-2xl text-center" style={{ animationDelay: '220ms' }}>
+          <h1 className="display-title mb-4 text-4xl font-black text-[#061b36] sm:text-5xl lg:text-6xl">
+            Move with <span className="text-[#007a3f]">intention.</span>
+          </h1>
+
+          <p className="mx-auto max-w-lg text-base leading-7 text-[#4d5d59] sm:text-lg sm:leading-8">
+            A welcoming space for capoeira practice, Brazilian culture and the people who keep the roda alive.
+          </p>
+          <p className="mx-auto mt-4 max-w-lg text-sm font-bold leading-6 text-[#007a3f] sm:text-base">
+            Classes in Taunton, Somerset, led by Professor Modo.
+          </p>
         </section>
       </div>
     </main>

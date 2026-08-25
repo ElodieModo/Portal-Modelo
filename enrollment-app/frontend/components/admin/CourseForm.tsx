@@ -71,7 +71,7 @@ export default function CourseForm({ course, onClose }: CourseFormProps) {
     if (response.error) {
       setError(response.error);
     } else {
-      alert(`Course ${course ? 'updated' : 'created'} successfully!`);
+      alert(`Class ${course ? 'updated' : 'created'} successfully!`);
       onClose();
     }
     setLoading(false);
@@ -82,7 +82,7 @@ export default function CourseForm({ course, onClose }: CourseFormProps) {
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-amber-700 text-white p-4 flex justify-between items-center">
           <h2 className="text-xl font-bold">
-            {course ? '✏️ Edit Course' : '➕ Add New Course'}
+            {course ? '✏️ Edit Class' : '➕ Add New Class'}
           </h2>
           <button
             onClick={onClose}
@@ -102,7 +102,7 @@ export default function CourseForm({ course, onClose }: CourseFormProps) {
           {/* Basic Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">Course Name *</label>
+              <label className="block text-gray-700 font-semibold mb-2">Class Name *</label>
               <input
                 type="text"
                 name="name"
@@ -146,7 +146,7 @@ export default function CourseForm({ course, onClose }: CourseFormProps) {
             </div>
           </div>
 
-          {/* Course Type */}
+          {/* Class Type */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-gray-700 font-semibold mb-2">Type *</label>

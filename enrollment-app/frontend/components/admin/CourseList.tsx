@@ -25,12 +25,12 @@ export default function CourseList() {
   };
 
   const handleDeleteCourse = async (courseId: string) => {
-    if (!confirm('Are you sure you want to delete this course?')) return;
+    if (!confirm('Are you sure you want to delete this class?')) return;
 
     const response = await apiClient.deleteCourse(courseId);
     if (!response.error) {
       setCourses(courses.filter(c => c.id !== courseId));
-      alert('Course deleted successfully');
+      alert('Class deleted successfully');
     } else {
       alert(`Error: ${response.error}`);
     }
@@ -42,7 +42,7 @@ export default function CourseList() {
     fetchCourses();
   };
 
-  if (loading) return <p className="text-center text-gray-600">Loading courses...</p>;
+  if (loading) return <p className="text-center text-gray-600">Loading classes...</p>;
 
   const groupedCourses = groupCoursesByCategory(
     courses,
@@ -69,7 +69,7 @@ export default function CourseList() {
           }}
           className="bg-amber-600 text-white px-6 py-2 rounded-lg hover:bg-amber-700 transition font-semibold"
         >
-          ➕ Add New Course
+          ➕ Add New Class
         </button>
       </div>
 
@@ -187,8 +187,8 @@ export default function CourseList() {
 
         {courses.length === 0 && (
           <div className="p-8 text-center text-gray-600">
-            <p className="text-lg">No courses yet</p>
-            <p className="text-sm mt-2">Click &quot;Add New Course&quot; to create your first course</p>
+            <p className="text-lg">No classes yet</p>
+            <p className="text-sm mt-2">Click &quot;Add New Class&quot; to create your first class</p>
           </div>
         )}
       </div>
