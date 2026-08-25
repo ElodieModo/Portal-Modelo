@@ -8,8 +8,8 @@
   "theme_color": "#061b36",
   "icons": [
     {
-      "src": "/logo.png",
-      "sizes": "1536x1024",
+      "src": "/capoeirista-icon.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     }

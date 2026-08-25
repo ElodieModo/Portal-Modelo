@@ -7,8 +7,8 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
   themeColor: '#061b36',
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: '/capoeirista-icon.png',
+    apple: '/capoeirista-icon.png',
   },
 };
 
