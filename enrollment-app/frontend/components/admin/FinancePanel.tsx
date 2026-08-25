@@ -37,6 +37,7 @@ export default function FinancePanel() {
   const [loading, setLoading] = useState(true);
   const [expenseSaving, setExpenseSaving] = useState(false);
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState<'payments' | 'expenses'>('payments');
 
   useEffect(() => {
     const loadFinance = async () => {
@@ -162,7 +163,24 @@ export default function FinancePanel() {
         </div>
       </div>
 
-      <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+      <div className="flex gap-1 overflow-x-auto border-b border-gray-200">
+        <button
+          type="button"
+          onClick={() => setActiveTab('payments')}
+          className={`shrink-0 border-b-2 px-4 py-3 text-sm font-bold ${activeTab === 'payments' ? 'border-green-600 text-green-700' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+        >
+          Class payments
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('expenses')}
+          className={`shrink-0 border-b-2 px-4 py-3 text-sm font-bold ${activeTab === 'expenses' ? 'border-red-600 text-red-700' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+        >
+          Association expenses
+        </button>
+      </div>
+
+      {activeTab === 'expenses' && <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
         <form onSubmit={handleExpenseSubmit} className="bg-white p-6 rounded-lg shadow space-y-4">
           <div>
             <h2 className="text-xl font-bold text-gray-800">Add an expense</h2>
@@ -259,9 +277,9 @@ export default function FinancePanel() {
             </div>
           )}
         </section>
-      </section>
+      </section>}
 
-      {groupedEnrollments.length === 0 ? (
+      {activeTab === 'payments' && (groupedEnrollments.length === 0 ? (
         <div className="bg-white p-6 rounded-lg shadow text-gray-600">No active enrollments.</div>
       ) : (
         groupedEnrollments.map(([dateKey, dateEnrollments]) => {
@@ -345,7 +363,7 @@ export default function FinancePanel() {
             </section>
           );
         })
-      )}
+      ))}
     </div>
   );
 }
