@@ -357,7 +357,16 @@ router.delete('/enrollments/:enrollmentId', adminOnly, async (req: AuthRequest, 
 router.get('/students', adminOnly, async (req: AuthRequest, res: Response) => {
   try {
     const students = await prisma.student.findMany({
-      include: {
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        birthDate: true,
+        age: true,
+        verified: true,
+        createdAt: true,
         enrollments: {
           include: {
             course: true

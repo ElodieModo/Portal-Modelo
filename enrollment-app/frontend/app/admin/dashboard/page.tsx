@@ -13,7 +13,7 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [admin, setAdmin] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<'overview' | 'courses' | 'enrollments' | 'finance'>('overview');
+  const [tab, setTab] = useState<'overview' | 'courses' | 'students' | 'enrollments' | 'finance'>('overview');
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -60,13 +60,14 @@ export default function AdminDashboard() {
           {[
             ['overview', '📊 Overview'],
             ['courses', '📅 Classes'],
+            ['students', '👤 Students'],
             ['enrollments', '👥 Enrollments'],
             ['finance', '💷 Finance'],
           ].map(([value, label]) => (
             <button
               key={value}
               type="button"
-              onClick={() => setTab(value as 'overview' | 'courses' | 'enrollments' | 'finance')}
+              onClick={() => setTab(value as 'overview' | 'courses' | 'students' | 'enrollments' | 'finance')}
               className={`shrink-0 px-3 py-2 text-sm font-bold sm:px-4 ${
                 tab === value
                   ? 'border-b-2 border-[#007a3f] text-[#007a3f]'
@@ -80,6 +81,13 @@ export default function AdminDashboard() {
 
         {tab === 'overview' && <EnrollmentStats />}
         {tab === 'courses' && <CourseList />}
+        {tab === 'students' && (
+          <div className="overflow-hidden rounded-2xl border border-[#e7dfd5] bg-white/85 p-4 shadow-sm sm:p-6">
+            <h2 className="mb-1 text-xl font-black text-[#061b36]">Registered Students</h2>
+            <p className="mb-4 text-sm text-[#64716c]">Everyone who has created an account.</p>
+            <StudentList />
+          </div>
+        )}
         {tab === 'enrollments' && (
           <div className="overflow-hidden rounded-2xl border border-[#e7dfd5] bg-white/85 p-4 shadow-sm sm:p-6">
             <h2 className="mb-4 text-xl font-black text-[#061b36]">All Enrollments</h2>
@@ -88,6 +96,63 @@ export default function AdminDashboard() {
         )}
         {tab === 'finance' && <FinancePanel />}
       </div>
+    </div>
+  );
+}
+
+function StudentList() {
+  const [students, setStudents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await apiClient.getAllStudents();
+        if (!response.error && Array.isArray(response.data)) {
+          setStudents(response.data);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, []);
+
+  if (loading) return <p className="text-sm text-[#64716c]">Loading students...</p>;
+
+  if (students.length === 0) {
+    return <p className="text-sm text-[#64716c]">No registered students yet.</p>;
+  }
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[720px] text-sm">
+        <thead className="border-b border-[#e7dfd5] bg-[#f9f5ee]">
+          <tr>
+            <th className="px-4 py-2 text-left font-bold text-[#061b36]">Name</th>
+            <th className="px-4 py-2 text-left font-bold text-[#061b36]">Email</th>
+            <th className="px-4 py-2 text-left font-bold text-[#061b36]">Phone</th>
+            <th className="px-4 py-2 text-left font-bold text-[#061b36]">Account created</th>
+            <th className="px-4 py-2 text-left font-bold text-[#061b36]">Courses</th>
+          </tr>
+        </thead>
+        <tbody>
+          {students.map((student) => (
+            <tr key={student.id} className="border-b border-[#f0e9e1] hover:bg-[#fffaf2]">
+              <td className="px-4 py-2 font-medium text-[#17231f]">
+                {student.firstName} {student.lastName}
+              </td>
+              <td className="px-4 py-2 text-[#4d5d59]">{student.email}</td>
+              <td className="px-4 py-2 text-[#4d5d59]">{student.phone || 'Not provided'}</td>
+              <td className="whitespace-nowrap px-4 py-2 text-[#4d5d59]">
+                {new Date(student.createdAt).toLocaleDateString()}
+              </td>
+              <td className="px-4 py-2 text-[#4d5d59]">{student.enrollments?.length || 0}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
