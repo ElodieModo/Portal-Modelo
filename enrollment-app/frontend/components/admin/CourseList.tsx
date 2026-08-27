@@ -11,6 +11,8 @@ export default function CourseList() {
   const [showForm, setShowForm] = useState(false);
   const [editingCourse, setEditingCourse] = useState<any>(null);
   const [activeGroup, setActiveGroup] = useState<'All' | CourseGroup>('All');
+  const [enrollmentDetails, setEnrollmentDetails] = useState<any>(null);
+  const [enrollmentsLoading, setEnrollmentsLoading] = useState(false);
 
   useEffect(() => {
     fetchCourses();
@@ -40,6 +42,20 @@ export default function CourseList() {
     setShowForm(false);
     setEditingCourse(null);
     fetchCourses();
+  };
+
+  const handleViewEnrollments = async (courseId: string) => {
+    setEnrollmentsLoading(true);
+    setEnrollmentDetails(null);
+
+    const response = await apiClient.getCourseEnrollments(courseId);
+    if (!response.error) {
+      setEnrollmentDetails(response.data);
+    } else {
+      alert(`Error: ${response.error}`);
+    }
+
+    setEnrollmentsLoading(false);
   };
 
   if (loading) return <p className="text-center text-gray-600">Loading classes...</p>;
@@ -78,6 +94,77 @@ export default function CourseList() {
           course={editingCourse}
           onClose={handleFormClose}
         />
+      )}
+
+      {enrollmentsLoading && (
+        <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          Loading enrollments...
+        </div>
+      )}
+
+      {enrollmentDetails && (
+        <div className="mb-6 overflow-hidden rounded-lg border border-amber-200 bg-white shadow">
+          <div className="flex flex-wrap items-start justify-between gap-3 border-b border-amber-100 bg-amber-50 p-4">
+            <div>
+              <h2 className="text-xl font-bold text-amber-900">
+                Enrollments: {enrollmentDetails.course.name}
+              </h2>
+              <p className="mt-1 text-sm text-amber-800">
+                {enrollmentDetails.total} enrolled · {enrollmentDetails.available} spots available
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setEnrollmentDetails(null)}
+              className="text-sm font-semibold text-amber-700 hover:text-amber-900"
+            >
+              Close
+            </button>
+          </div>
+
+          {enrollmentDetails.enrollments.length === 0 ? (
+            <p className="p-4 text-sm text-gray-600">No enrollments for this course yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[620px] text-sm">
+                <thead className="border-b border-gray-200 bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Student</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Email</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Phone</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Enrolled</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {enrollmentDetails.enrollments.map((enrollment: any) => (
+                    <tr key={enrollment.id} className="border-b border-gray-100">
+                      <td className="px-4 py-3 text-gray-800">
+                        {enrollment.student.firstName} {enrollment.student.lastName}
+                      </td>
+                      <td className="px-4 py-3 text-gray-600">{enrollment.student.email}</td>
+                      <td className="px-4 py-3 text-gray-600">
+                        {enrollment.student.phone || 'Not provided'}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                          enrollment.status === 'ACTIVE'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-700'
+                        }`}>
+                          {enrollment.status}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3 text-gray-600">
+                        {new Date(enrollment.enrolledAt).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       )}
 
       <div className="mb-6 flex flex-wrap gap-2">
@@ -169,9 +256,8 @@ export default function CourseList() {
 
                       <div className="mt-3 text-center">
                         <button
-                          onClick={() => {
-                            // Could navigate to course enrollment details
-                          }}
+                          type="button"
+                          onClick={() => handleViewEnrollments(itemCourse.id)}
                           className="text-amber-600 hover:text-amber-800 text-sm font-semibold"
                         >
                           View Enrollments →
