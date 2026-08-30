@@ -110,6 +110,7 @@ model Student {
   birthDate DateTime?
   age       Int?
   verified  Boolean   @default(false)
+  createdBy String?   @default("SELF_REGISTRATION") // SELF_REGISTRATION or ADMIN_MANUAL_CREATION or admin email
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 

@@ -44,7 +44,8 @@ router.post('/', async (req: AuthRequest, res: Response) => {
         lastName,
         phone,
         birthDate: birthDate ? new Date(birthDate) : null,
-        age
+        age,
+        createdBy: 'ADMIN_MANUAL_CREATION'
       }
     });
 

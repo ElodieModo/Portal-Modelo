@@ -104,6 +104,13 @@ function StudentList() {
   const [students, setStudents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const getCreatedByLabel = (value?: string | null) => {
+    if (!value) return 'Unknown';
+    if (value === 'SELF_REGISTRATION') return 'Student self-registration';
+    if (value === 'ADMIN_MANUAL_CREATION') return 'Admin created';
+    return value;
+  };
+
   useEffect(() => {
     const fetchStudents = async () => {
       try {
@@ -127,12 +134,13 @@ function StudentList() {
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[720px] text-sm">
+      <table className="w-full min-w-[820px] text-sm">
         <thead className="border-b border-[#e7dfd5] bg-[#f9f5ee]">
           <tr>
             <th className="px-4 py-2 text-left font-bold text-[#061b36]">Name</th>
             <th className="px-4 py-2 text-left font-bold text-[#061b36]">Email</th>
             <th className="px-4 py-2 text-left font-bold text-[#061b36]">Phone</th>
+            <th className="px-4 py-2 text-left font-bold text-[#061b36]">Created by</th>
             <th className="px-4 py-2 text-left font-bold text-[#061b36]">Account created</th>
             <th className="px-4 py-2 text-left font-bold text-[#061b36]">Courses</th>
           </tr>
@@ -145,6 +153,7 @@ function StudentList() {
               </td>
               <td className="px-4 py-2 text-[#4d5d59]">{student.email}</td>
               <td className="px-4 py-2 text-[#4d5d59]">{student.phone || 'Not provided'}</td>
+              <td className="px-4 py-2 text-[#4d5d59]">{getCreatedByLabel(student.createdBy)}</td>
               <td className="whitespace-nowrap px-4 py-2 text-[#4d5d59]">
                 {new Date(student.createdAt).toLocaleDateString()}
               </td>

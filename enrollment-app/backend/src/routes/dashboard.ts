@@ -366,6 +366,7 @@ router.get('/students', adminOnly, async (req: AuthRequest, res: Response) => {
         birthDate: true,
         age: true,
         verified: true,
+        createdBy: true,
         createdAt: true,
         enrollments: {
           include: {

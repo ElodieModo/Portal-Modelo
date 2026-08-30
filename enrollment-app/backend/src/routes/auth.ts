@@ -50,7 +50,8 @@ router.post('/register', async (req: AuthRequest, res: Response) => {
         phone,
         birthDate: birthDate ? new Date(birthDate) : null,
         age,
-        verified: true // In production, you might require email verification
+        verified: true, // In production, you might require email verification
+        createdBy: 'SELF_REGISTRATION'
       }
     });
 
