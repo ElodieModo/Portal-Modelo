@@ -23,10 +23,23 @@ interface Expense {
   date: string;
 }
 
+interface ManualAttendance {
+  id: string;
+  courseId: string;
+  date: string;
+  studentName: string;
+  age?: number | null;
+  amount: number;
+  notes?: string | null;
+  course?: { name: string; startTime: string; endTime: string };
+}
+
 const formatAmount = (amount: number) => `£${amount.toFixed(2)}`;
 
 export default function FinancePanel() {
   const [enrollments, setEnrollments] = useState<FinanceEnrollment[]>([]);
+  const [manualAttendances, setManualAttendances] = useState<ManualAttendance[]>([]);
+  const [courses, setCourses] = useState<any[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [expenseForm, setExpenseForm] = useState({
     category: 'ROOM' as Expense['category'],
@@ -36,14 +49,25 @@ export default function FinancePanel() {
   });
   const [loading, setLoading] = useState(true);
   const [expenseSaving, setExpenseSaving] = useState(false);
+  const [manualSaving, setManualSaving] = useState(false);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<'payments' | 'expenses'>('payments');
+  const [activeTab, setActiveTab] = useState<'payments' | 'expenses' | 'manual'>('payments');
+  const [manualForm, setManualForm] = useState({
+    courseId: '',
+    date: new Date().toISOString().slice(0, 10),
+    studentName: '',
+    age: '',
+    amount: '',
+    notes: '',
+  });
 
   useEffect(() => {
     const loadFinance = async () => {
-      const [enrollmentResponse, expenseResponse] = await Promise.all([
+      const [enrollmentResponse, expenseResponse, courseResponse, manualResponse] = await Promise.all([
         apiClient.getFinanceEnrollments(),
         apiClient.getExpenses(),
+        apiClient.getAllCourses(),
+        apiClient.getManualAttendance(),
       ]);
       if (!enrollmentResponse.error && Array.isArray(enrollmentResponse.data)) {
         setEnrollments(enrollmentResponse.data);
@@ -54,6 +78,12 @@ export default function FinancePanel() {
         setExpenses(expenseResponse.data);
       } else {
         setError(expenseResponse.error || 'Failed to load expenses');
+      }
+      if (!courseResponse.error && Array.isArray(courseResponse.data)) {
+        setCourses(courseResponse.data);
+      }
+      if (!manualResponse.error && Array.isArray(manualResponse.data)) {
+        setManualAttendances(manualResponse.data);
       }
       setLoading(false);
     };
@@ -66,11 +96,12 @@ export default function FinancePanel() {
     const received = enrollments
       .filter((enrollment) => enrollment.paymentReceived)
       .reduce((sum, enrollment) => sum + enrollment.expectedAmount, 0);
-    return { expected, received, outstanding: expected - received };
-  }, [enrollments]);
+    const manualReceived = manualAttendances.reduce((sum, record) => sum + Number(record.amount || 0), 0);
+    return { expected, received, manualReceived, actualReceived: received + manualReceived, outstanding: expected - received };
+  }, [enrollments, manualAttendances]);
 
   const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-  const balance = totals.received - totalExpenses;
+  const balance = totals.actualReceived - totalExpenses;
 
   const handleExpenseSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -97,6 +128,40 @@ export default function FinancePanel() {
     } else {
       setExpenses((current) => current.filter((item) => item.id !== expense.id));
     }
+  };
+
+  const handleManualAttendanceSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setManualSaving(true);
+    setError('');
+
+    const payload = {
+      courseId: manualForm.courseId,
+      date: manualForm.date,
+      studentName: manualForm.studentName,
+      age: manualForm.age === '' ? null : Number(manualForm.age),
+      amount: Number(manualForm.amount),
+      notes: manualForm.notes || undefined,
+    };
+
+    const response = await apiClient.recordManualAttendance(payload);
+    if (response.error) {
+      setError(response.error);
+    } else {
+      const refreshed = await apiClient.getManualAttendance();
+      if (!refreshed.error && Array.isArray(refreshed.data)) {
+        setManualAttendances(refreshed.data);
+      }
+      setManualForm({
+        courseId: manualForm.courseId,
+        date: manualForm.date,
+        studentName: '',
+        age: '',
+        amount: '',
+        notes: '',
+      });
+    }
+    setManualSaving(false);
   };
 
   const groupedEnrollments = useMemo(() => {
@@ -148,7 +213,7 @@ export default function FinancePanel() {
     <div className="space-y-6">
       {error && <div className="p-3 bg-red-100 text-red-700 rounded">{error}</div>}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white p-6 rounded-lg shadow">
           <p className="text-sm text-gray-600">Expected</p>
           <p className="text-3xl font-bold text-amber-600">{formatAmount(totals.expected)}</p>
@@ -156,6 +221,10 @@ export default function FinancePanel() {
         <div className="bg-white p-6 rounded-lg shadow">
           <p className="text-sm text-gray-600">Received</p>
           <p className="text-3xl font-bold text-green-600">{formatAmount(totals.received)}</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <p className="text-sm text-gray-600">Manual walk-ins</p>
+          <p className="text-3xl font-bold text-violet-600">{formatAmount(totals.manualReceived)}</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
           <p className="text-sm text-gray-600">Balance after expenses</p>
@@ -178,7 +247,147 @@ export default function FinancePanel() {
         >
           Association expenses
         </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('manual')}
+          className={`shrink-0 border-b-2 px-4 py-3 text-sm font-bold ${activeTab === 'manual' ? 'border-violet-600 text-violet-700' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+        >
+          Manual present students
+        </button>
       </div>
+
+      {activeTab === 'manual' && (
+        <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+          <form onSubmit={handleManualAttendanceSubmit} className="bg-white p-6 rounded-lg shadow space-y-4">
+            <div>
+              <h2 className="text-xl font-bold text-gray-800">Add a student who came without registration</h2>
+              <p className="mt-1 text-sm text-gray-600">Record a walk-in participant and the amount effectively collected.</p>
+            </div>
+
+            <div>
+              <label htmlFor="manual-course" className="block text-sm font-semibold text-gray-700 mb-1">Course</label>
+              <select
+                id="manual-course"
+                required
+                value={manualForm.courseId}
+                onChange={(event) => setManualForm((current) => ({ ...current, courseId: event.target.value }))}
+                className="w-full border border-gray-300 rounded px-3 py-2"
+              >
+                <option value="">Select a course</option>
+                {courses.map((course) => (
+                  <option key={course.id} value={course.id}>{course.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label htmlFor="manual-date" className="block text-sm font-semibold text-gray-700 mb-1">Course date</label>
+                <input
+                  id="manual-date"
+                  type="date"
+                  required
+                  value={manualForm.date}
+                  onChange={(event) => setManualForm((current) => ({ ...current, date: event.target.value }))}
+                  className="w-full border border-gray-300 rounded px-3 py-2"
+                />
+              </div>
+              <div>
+                <label htmlFor="manual-amount" className="block text-sm font-semibold text-gray-700 mb-1">Amount collected (£)</label>
+                <input
+                  id="manual-amount"
+                  type="number"
+                  min="0"
+                  step="0.5"
+                  required
+                  value={manualForm.amount}
+                  onChange={(event) => setManualForm((current) => ({ ...current, amount: event.target.value }))}
+                  className="w-full border border-gray-300 rounded px-3 py-2"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.8fr)] gap-3">
+              <div>
+                <label htmlFor="manual-student-name" className="block text-sm font-semibold text-gray-700 mb-1">Student name</label>
+                <input
+                  id="manual-student-name"
+                  type="text"
+                  required
+                  value={manualForm.studentName}
+                  onChange={(event) => setManualForm((current) => ({ ...current, studentName: event.target.value }))}
+                  className="w-full border border-gray-300 rounded px-3 py-2"
+                  placeholder="e.g. Nadia Smith"
+                />
+              </div>
+              <div>
+                <label htmlFor="manual-age" className="block text-sm font-semibold text-gray-700 mb-1">Age</label>
+                <input
+                  id="manual-age"
+                  type="number"
+                  min="0"
+                  max="120"
+                  value={manualForm.age}
+                  onChange={(event) => setManualForm((current) => ({ ...current, age: event.target.value }))}
+                  className="w-full border border-gray-300 rounded px-3 py-2"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="manual-notes" className="block text-sm font-semibold text-gray-700 mb-1">Notes</label>
+              <textarea
+                id="manual-notes"
+                value={manualForm.notes}
+                onChange={(event) => setManualForm((current) => ({ ...current, notes: event.target.value }))}
+                rows={3}
+                className="w-full border border-gray-300 rounded px-3 py-2"
+                placeholder="Optional note"
+              />
+            </div>
+
+            <button type="submit" disabled={manualSaving} className="w-full rounded bg-violet-600 px-4 py-2 font-semibold text-white hover:bg-violet-700 disabled:opacity-60">
+              {manualSaving ? 'Saving...' : 'Add present student'}
+            </button>
+          </form>
+
+          <section className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b bg-gray-50 px-6 py-4">
+              <h2 className="text-xl font-bold text-gray-800">Manual entries</h2>
+              <p className="font-bold text-violet-600">{formatAmount(totals.manualReceived)}</p>
+            </div>
+            {manualAttendances.length === 0 ? (
+              <p className="p-6 text-gray-600">No manual present students recorded.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="border-b">
+                    <tr>
+                      <th className="px-6 py-3 text-left">Student</th>
+                      <th className="px-6 py-3 text-left">Course</th>
+                      <th className="px-6 py-3 text-left">Date</th>
+                      <th className="px-6 py-3 text-right">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {manualAttendances.map((record) => (
+                      <tr key={record.id} className="border-b last:border-b-0">
+                        <td className="px-6 py-3">
+                          <div className="font-medium text-gray-800">{record.studentName}</div>
+                          {record.age !== null && record.age !== undefined && <div className="text-xs text-gray-500">Age {record.age}</div>}
+                        </td>
+                        <td className="px-6 py-3">{record.course?.name || 'Course'}</td>
+                        <td className="px-6 py-3">{new Date(`${record.date.slice(0, 10)}T12:00:00`).toLocaleDateString()}</td>
+                        <td className="px-6 py-3 text-right font-semibold">{formatAmount(Number(record.amount || 0))}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+        </section>
+      )}
 
       {activeTab === 'expenses' && <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
         <form onSubmit={handleExpenseSubmit} className="bg-white p-6 rounded-lg shadow space-y-4">

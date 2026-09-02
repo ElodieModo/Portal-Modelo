@@ -190,7 +190,7 @@ Frontend will start on `http://localhost:3000`
    - Day: "Sunday"
    - Start Time: "10:30"
    - End Time: "11:30"
-   - Price per Hour: "8"
+   - Price per class/session: "8"
    - Max Students: 20
 
 5. **Click "Create Course"**

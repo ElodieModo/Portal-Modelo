@@ -179,7 +179,7 @@ export default function CourseForm({ course, onClose }: CourseFormProps) {
           {/* Pricing */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">Adult Price (£/hour) *</label>
+              <label className="block text-gray-700 font-semibold mb-2">Adult Price per class/session (£) *</label>
               <input
                 type="number"
                 name="pricePerHour"
@@ -193,7 +193,7 @@ export default function CourseForm({ course, onClose }: CourseFormProps) {
             </div>
 
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">Child Price (£/hour, 14 & under) *</label>
+              <label className="block text-gray-700 font-semibold mb-2">Child Price per class/session (£, 14 & under) *</label>
               <input
                 type="number"
                 name="childPricePerHour"

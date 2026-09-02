@@ -122,12 +122,12 @@ npm run dev
 - **Time**: 10:30 AM - 11:30 AM (1 hour)
 - **Target**: Ages 5-14 (children), families welcome
 - **Level**: Beginner
-- **Price**: £8 (1 hour × £8/hour)
+- **Price**: £8 per class/session
 - **Capacity**: 20 students per class
 
 **Thursday Classes (Adults)**
-- **Beginner**: 6:30 PM - 7:30 PM (1 hour), £8, 20 students
-- **Intermediate**: 6:30 PM - 7:30 PM (1 hour), £8, 20 students
+- **Beginner**: 6:30 PM - 7:30 PM (1 hour), £8 per class/session, 20 students
+- **Intermediate**: 6:30 PM - 7:30 PM (1 hour), £8 per class/session, 20 students
 
 ### Special & Exceptional Courses
 
@@ -140,7 +140,7 @@ Special courses can be scheduled on any day/time and display prominently in the 
 
 ### 💷 Payment & 24h Cancellation Policy
 
-- **Pricing**: £8 per hour (all courses)
+- **Pricing**: £8 per class/session (all courses)
 - **Payment**: Due on the day of the course (cash or bank transfer) - no online payment
 - **Cancellation**: Free cancellation up to 24 hours before class - no penalty
 

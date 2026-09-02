@@ -121,6 +121,24 @@ class ApiClient {
     return this.request('/dashboard/finance/expenses');
   }
 
+  async getManualAttendance() {
+    return this.request('/attendance/manual');
+  }
+
+  async recordManualAttendance(data: {
+    courseId: string;
+    date: string;
+    studentName: string;
+    age?: number | string | null;
+    amount: number;
+    notes?: string;
+  }) {
+    return this.request('/attendance/manual', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   async createExpense(expenseData: { category: string; description: string; amount: number; date: string }) {
     return this.request('/dashboard/finance/expenses', {
       method: 'POST',

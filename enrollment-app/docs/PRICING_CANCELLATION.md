@@ -2,16 +2,16 @@
 
 ## 💷 Pricing
 
-All courses are priced at **£8 per hour**.
+All courses are priced at **£8 per class/session**.
 
-### Course Prices by Duration
+### Course Prices by Session
 
-| Day | Course | Duration | Price |
-|-----|--------|----------|-------|
-| Sunday | Children & Family Class | 1 hour (10:30-11:30) | **£8** |
-| Thursday | Beginner Adult Class | 1 hour (18:30-19:30) | **£8** |
-| Thursday | Intermediate Adult Class | 1 hour (18:30-19:30) | **£8** |
-| Special | Workshops & Events | Varies | £8/hour |
+| Day | Course | Session | Price |
+|-----|--------|---------|-------|
+| Sunday | Children & Family Class | 1 class/session (10:30-11:30) | **£8** |
+| Thursday | Beginner Adult Class | 1 class/session (18:30-19:30) | **£8** |
+| Thursday | Intermediate Adult Class | 1 class/session (18:30-19:30) | **£8** |
+| Special | Workshops & Events | Varies | £8 per session |
 
 ## 💳 Payment Methods
 
@@ -81,7 +81,7 @@ Payment is **due on the day of the course** (on-site only).
 **A:** Payment is due on the day of class. If you cancel in advance (24+ hours), no charge applies. Otherwise, the full course fee is due.
 
 ### Q: What about group sessions or workshops?
-**A:** Same pricing (£8/hour) and cancellation policy applies to all courses, including special workshops.
+**A:** Same pricing (£8 per class/session) and cancellation policy applies to all courses, including special workshops.
 
 ### Q: Can I reschedule to a different time?
 **A:** Yes! Cancel your current enrollment (if within 24h window) and enroll in a different course session.

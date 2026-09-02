@@ -198,7 +198,7 @@ export default function StudentCoursesPage() {
                         <div className="space-y-2 text-sm text-[#0c2b4d]">
                           <p>📅 {new Date(course.enrollmentDate).toLocaleDateString('en-GB')}</p>
                           <p>⏰ {course.startTime} - {course.endTime}</p>
-                          <p>💷 £{course.pricePerHour}/hour (adult) · £{course.childPricePerHour}/hour (14 & under)</p>
+                          <p>💷 £{course.pricePerHour} per class/session (adult) · £{course.childPricePerHour} per class/session (14 & under)</p>
                         </div>
 
                         <button

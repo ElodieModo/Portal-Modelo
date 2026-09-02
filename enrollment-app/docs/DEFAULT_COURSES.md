@@ -12,11 +12,11 @@ After setting up the admin dashboard, create these default courses:
 - Start Time: `10:30`
 - End Time: `11:30`
 - Max Students: `20`
-- Price per Hour: `8`
+- Price per class/session: `8`
 - Description: `Beginner capoeira class for children aged 5-14 and families. Focus on basic techniques, rhythm, and cultural education.`
 
 **Duration:** 1 hour
-**Price:** £8
+**Price:** £8 per class/session
 
 ---
 
@@ -30,11 +30,11 @@ After setting up the admin dashboard, create these default courses:
 - Start Time: `18:30`
 - End Time: `19:30`
 - Max Students: `20`
-- Price per Hour: `8`
+- Price per class/session: `8`
 - Description: `Introduction to capoeira for adults with no prior experience. Learn basic movements, techniques, and the cultural history of capoeira.`
 
 **Duration:** 1 hour
-**Price:** £8
+**Price:** £8 per class/session
 
 ---
 
@@ -48,11 +48,11 @@ After setting up the admin dashboard, create these default courses:
 - Start Time: `18:30`
 - End Time: `19:30`
 - Max Students: `20`
-- Price per Hour: `8`
+- Price per class/session: `8`
 - Description: `For students with 6+ months of capoeira experience. Learn advanced techniques, combinations, and participate in roda practice.`
 
 **Duration:** 1 hour
-**Price:** £8
+**Price:** £8 per class/session
 
 ---
 
@@ -68,30 +68,30 @@ For workshops, master classes, or special events:
 - Start Time: `14:00`
 - End Time: `16:00`
 - Max Students: `15`
-- Price per Hour: `8`
+- Price per class/session: `8`
 - Description: `Learn traditional berimbau playing techniques and rhythms. Bring or borrow a berimbau!`
 
 **Duration:** 2 hours
-**Price:** £16 (2 hours × £8/hour)
+**Price:** £8 per session
 
 ---
 
 ## Pricing Calculation
 
-All courses use the formula:
+All courses use a flat fee per class/session:
 
 ```
-Price = Duration (hours) × £8/hour
+Price = £8 per class/session
 ```
 
 ### Examples
 
-| Course | Duration | Calculation | Price |
-|--------|----------|------------|-------|
-| Regular 1-hour class | 1 hour | 1 × £8 | **£8** |
-| 90-minute workshop | 1.5 hours | 1.5 × £8 | **£12** |
-| 2-hour intensive | 2 hours | 2 × £8 | **£16** |
-| Half-hour intro | 0.5 hours | 0.5 × £8 | **£4** |
+| Course | Session | Price |
+|--------|---------|-------|
+| Regular 1-hour class | 1 class/session | **£8** |
+| 90-minute workshop | 1 class/session | **£8** |
+| 2-hour intensive | 1 class/session | **£8** |
+| Half-hour intro | 1 class/session | **£8** |
 
 ---
 
@@ -103,11 +103,9 @@ Price = Duration (hours) × £8/hour
   
 - All times are in local timezone (adjust as needed)
 
-- Price per hour is fixed at £8 for all courses
+- The price is fixed at £8 per class/session for all courses
 
-- The app automatically calculates total price based on start/end times
-
-- Students see the calculated price in their enrollment confirmation
+- Students see the flat session price in their enrollment confirmation
 
 ---
 
@@ -119,7 +117,7 @@ When a student enrolls, they receive an email showing:
 Course: Children & Family Class
 Date: Sunday
 Time: 10:30 - 11:30
-Price: £8 (1 hour × £8/hour)
+Price: £8 per class/session
 
 Payment Information:
 Payment is due on the day of the course.

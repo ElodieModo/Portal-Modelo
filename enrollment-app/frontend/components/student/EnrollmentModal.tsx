@@ -82,16 +82,11 @@ export default function EnrollmentModal({
     }
   };
 
-  const durationHours = (() => {
-    const [sh, sm] = course.startTime.split(':').map(Number);
-    const [eh, em] = course.endTime.split(':').map(Number);
-    return (eh + em / 60) - (sh + sm / 60);
-  })();
   const totalPrice = participants
     .reduce((sum, p) => {
       const age = Number(p.age);
       const rate = !Number.isNaN(age) && age <= CHILD_AGE_LIMIT ? course.childPricePerHour : course.pricePerHour;
-      return sum + rate * durationHours;
+      return sum + rate;
     }, 0)
     .toFixed(2);
 
@@ -105,7 +100,7 @@ export default function EnrollmentModal({
           </p>
           <p className="text-gray-600 text-sm mb-4">
             Date: {new Date(course.enrollmentDate).toLocaleDateString('en-GB')} ·{' '}
-            {course.startTime} - {course.endTime} · £{course.pricePerHour}/hour (adult) · £{course.childPricePerHour}/hour (14 & under)
+            {course.startTime} - {course.endTime} · £{course.pricePerHour} per class/session (adult) · £{course.childPricePerHour} per class/session (14 & under)
           </p>
 
           {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">{error}</div>}
