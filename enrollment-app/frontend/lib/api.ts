@@ -50,6 +50,10 @@ class ApiClient {
         headers,
       });
 
+      if (response.status === 204) {
+        return { data: undefined as T };
+      }
+
       const data = await response.json();
 
       if (!response.ok) {
@@ -136,6 +140,26 @@ class ApiClient {
     return this.request('/attendance/manual', {
       method: 'POST',
       body: JSON.stringify(data),
+    });
+  }
+
+  async updateManualAttendance(id: string, data: {
+    courseId: string;
+    date: string;
+    studentName: string;
+    age?: number | string | null;
+    amount: number;
+    notes?: string;
+  }) {
+    return this.request(`/attendance/manual/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteManualAttendance(id: string) {
+    return this.request(`/attendance/manual/${id}`, {
+      method: 'DELETE',
     });
   }
 

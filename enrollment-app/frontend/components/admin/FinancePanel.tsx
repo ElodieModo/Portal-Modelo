@@ -50,6 +50,7 @@ export default function FinancePanel() {
   const [loading, setLoading] = useState(true);
   const [expenseSaving, setExpenseSaving] = useState(false);
   const [manualSaving, setManualSaving] = useState(false);
+  const [editingManualId, setEditingManualId] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<'payments' | 'expenses'>('payments');
   const [manualForm, setManualForm] = useState({
@@ -144,14 +145,18 @@ export default function FinancePanel() {
       notes: manualForm.notes || undefined,
     };
 
-    const response = await apiClient.recordManualAttendance(payload);
+    const response = editingManualId
+      ? await apiClient.updateManualAttendance(editingManualId, payload)
+      : await apiClient.recordManualAttendance(payload);
     if (response.error) {
       setError(response.error);
     } else {
-      const refreshed = await apiClient.getManualAttendance();
-      if (!refreshed.error && Array.isArray(refreshed.data)) {
-        setManualAttendances(refreshed.data);
+      if (response.data) {
+        setManualAttendances((current) => editingManualId
+          ? current.map((record) => record.id === editingManualId ? response.data as ManualAttendance : record)
+          : [response.data as ManualAttendance, ...current]);
       }
+      setEditingManualId(null);
       setManualForm({
         courseId: manualForm.courseId,
         date: manualForm.date,
@@ -162,6 +167,33 @@ export default function FinancePanel() {
       });
     }
     setManualSaving(false);
+  };
+
+  const handleManualEdit = (record: ManualAttendance) => {
+    setEditingManualId(record.id);
+    setManualForm({
+      courseId: record.courseId,
+      date: record.date.slice(0, 10),
+      studentName: record.studentName,
+      age: record.age === null || record.age === undefined ? '' : String(record.age),
+      amount: String(record.amount),
+      notes: record.notes || '',
+    });
+    setError('');
+  };
+
+  const handleManualDelete = async (record: ManualAttendance) => {
+    if (!confirm(`Delete walk-in payment for "${record.studentName}"?`)) return;
+    const response = await apiClient.deleteManualAttendance(record.id);
+    if (response.error) {
+      setError(response.error);
+      return;
+    }
+    setManualAttendances((current) => current.filter((item) => item.id !== record.id));
+    if (editingManualId === record.id) {
+      setEditingManualId(null);
+      setManualForm((current) => ({ ...current, studentName: '', age: '', amount: '', notes: '' }));
+    }
   };
 
   const groupedEnrollments = useMemo(() => {
@@ -266,7 +298,7 @@ export default function FinancePanel() {
           <form onSubmit={handleManualAttendanceSubmit} className="rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-white p-5 shadow-sm sm:p-6">
             <div className="mb-5 border-b border-sky-100 pb-4">
               <span className="inline-flex rounded-full bg-sky-100 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-sky-800">Walk-in</span>
-              <h3 className="mt-3 text-xl font-black text-[#061b36]">Add a walk-in payment</h3>
+              <h3 className="mt-3 text-xl font-black text-[#061b36]">{editingManualId ? 'Edit walk-in payment' : 'Add a walk-in payment'}</h3>
               <p className="mt-1 text-sm leading-6 text-[#526174]">Record a present student who came without registration and the amount collected.</p>
             </div>
 
@@ -352,9 +384,23 @@ export default function FinancePanel() {
               />
             </div>
 
-            <button type="submit" disabled={manualSaving} className="w-full rounded-xl bg-[#007a3f] px-4 py-3 font-bold text-white shadow-sm transition hover:bg-[#005f32] disabled:cursor-not-allowed disabled:opacity-60">
-              {manualSaving ? 'Saving...' : 'Add walk-in payment'}
-            </button>
+            <div className="flex gap-3">
+              <button type="submit" disabled={manualSaving} className="flex-1 rounded-xl bg-[#007a3f] px-4 py-3 font-bold text-white shadow-sm transition hover:bg-[#005f32] disabled:cursor-not-allowed disabled:opacity-60">
+                {manualSaving ? 'Saving...' : editingManualId ? 'Save changes' : 'Add walk-in payment'}
+              </button>
+              {editingManualId && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingManualId(null);
+                    setManualForm((current) => ({ ...current, studentName: '', age: '', amount: '', notes: '' }));
+                  }}
+                  className="rounded-xl border border-gray-300 px-4 py-3 font-bold text-gray-700 transition hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
           </form>
 
           <section className="overflow-hidden rounded-2xl border border-[#dfe7ef] bg-white shadow-sm">
@@ -376,6 +422,7 @@ export default function FinancePanel() {
                       <th className="bg-[#f7fafc] px-6 py-3 text-left text-xs font-bold uppercase tracking-wide text-[#526174]">Course</th>
                       <th className="bg-[#f7fafc] px-6 py-3 text-left text-xs font-bold uppercase tracking-wide text-[#526174]">Date</th>
                       <th className="bg-[#f7fafc] px-6 py-3 text-right text-xs font-bold uppercase tracking-wide text-[#526174]">Amount</th>
+                      <th className="bg-[#f7fafc] px-6 py-3 text-right text-xs font-bold uppercase tracking-wide text-[#526174]">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -388,6 +435,10 @@ export default function FinancePanel() {
                         <td className="px-6 py-3">{record.course?.name || 'Course'}</td>
                         <td className="px-6 py-3">{new Date(`${record.date.slice(0, 10)}T12:00:00`).toLocaleDateString()}</td>
                         <td className="px-6 py-3 text-right font-semibold">{formatAmount(Number(record.amount || 0))}</td>
+                        <td className="whitespace-nowrap px-6 py-3 text-right">
+                          <button type="button" onClick={() => handleManualEdit(record)} className="mr-3 font-bold text-sky-700 hover:text-sky-900">Edit</button>
+                          <button type="button" onClick={() => handleManualDelete(record)} className="font-bold text-red-600 hover:text-red-800">Delete</button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
