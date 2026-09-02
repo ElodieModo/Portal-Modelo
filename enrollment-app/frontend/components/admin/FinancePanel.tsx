@@ -318,7 +318,7 @@ export default function FinancePanel() {
               </select>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3">
               <div className="min-w-0">
                 <label htmlFor="manual-date" className="block text-sm font-semibold text-gray-700 mb-1">Course date</label>
                 <input
@@ -345,7 +345,7 @@ export default function FinancePanel() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1.5fr)_minmax(5rem,0.8fr)]">
+            <div className="grid grid-cols-1 gap-3">
               <div className="min-w-0">
                 <label htmlFor="manual-student-name" className="block text-sm font-semibold text-gray-700 mb-1">Student name</label>
                 <input
