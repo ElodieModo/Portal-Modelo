@@ -213,48 +213,61 @@ export default function FinancePanel() {
     <div className="space-y-6">
       {error && <div className="p-3 bg-red-100 text-red-700 rounded">{error}</div>}
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-sm text-gray-600">Expected</p>
-          <p className="text-3xl font-bold text-amber-600">{formatAmount(totals.expected)}</p>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div className="rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white p-5 shadow-sm">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-amber-700">Expected</p>
+          <p className="mt-2 text-3xl font-black text-amber-700">{formatAmount(totals.expected)}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-sm text-gray-600">Received</p>
-          <p className="text-3xl font-bold text-green-600">{formatAmount(totals.received)}</p>
+        <div className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-5 shadow-sm">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-700">Received</p>
+          <p className="mt-2 text-3xl font-black text-emerald-700">{formatAmount(totals.received)}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-sm text-gray-600">Manual walk-ins</p>
-          <p className="text-3xl font-bold text-violet-600">{formatAmount(totals.manualReceived)}</p>
+        <div className="rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 to-white p-5 shadow-sm">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-sky-700">Walk-ins</p>
+          <p className="mt-2 text-3xl font-black text-sky-700">{formatAmount(totals.manualReceived)}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-sm text-gray-600">Balance after expenses</p>
-          <p className={`text-3xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>{formatAmount(balance)}</p>
+        <div className={`rounded-2xl border p-5 shadow-sm ${balance >= 0 ? 'border-teal-200 bg-gradient-to-br from-teal-50 to-white' : 'border-red-200 bg-gradient-to-br from-red-50 to-white'}`}>
+          <p className={`text-xs font-bold uppercase tracking-[0.14em] ${balance >= 0 ? 'text-teal-700' : 'text-red-700'}`}>Balance</p>
+          <p className={`mt-2 text-3xl font-black ${balance >= 0 ? 'text-teal-700' : 'text-red-700'}`}>{formatAmount(balance)}</p>
         </div>
       </div>
 
-      <div className="flex gap-1 overflow-x-auto border-b border-gray-200">
+      <div className="inline-flex max-w-full gap-1 overflow-x-auto rounded-xl border border-gray-200 bg-white p-1 shadow-sm">
         <button
           type="button"
           onClick={() => setActiveTab('payments')}
-          className={`shrink-0 border-b-2 px-4 py-3 text-sm font-bold ${activeTab === 'payments' ? 'border-green-600 text-green-700' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+          className={`shrink-0 rounded-lg px-4 py-2.5 text-sm font-bold transition-colors ${activeTab === 'payments' ? 'bg-[#061b36] text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-800'}`}
         >
           Class payments
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('expenses')}
-          className={`shrink-0 border-b-2 px-4 py-3 text-sm font-bold ${activeTab === 'expenses' ? 'border-red-600 text-red-700' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+          className={`shrink-0 rounded-lg px-4 py-2.5 text-sm font-bold transition-colors ${activeTab === 'expenses' ? 'bg-[#061b36] text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-800'}`}
         >
           Association expenses
         </button>
       </div>
 
       {activeTab === 'payments' && (
-        <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-          <form onSubmit={handleManualAttendanceSubmit} className="bg-white p-6 rounded-lg shadow space-y-4">
+        <div className="space-y-7">
+          <div className="flex flex-col gap-3 border-b border-[#dfe7ef] pb-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-xl font-bold text-gray-800">Add a walk-in payment</h2>
-              <p className="mt-1 text-sm text-gray-600">Record a present student who came without registration and the amount collected.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#007a3f]">Payment ledger</p>
+              <h2 className="mt-1 text-2xl font-black text-[#061b36]">Class payments</h2>
+              <p className="mt-1 text-sm text-[#526174]">Track registered students and record walk-in payments in one place.</p>
+            </div>
+            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900">
+              <span className="font-bold">Outstanding</span>{' '}{formatAmount(totals.outstanding)}
+            </div>
+          </div>
+
+          <section className="grid gap-5 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.4fr)]">
+          <form onSubmit={handleManualAttendanceSubmit} className="rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-white p-5 shadow-sm sm:p-6">
+            <div className="mb-5 border-b border-sky-100 pb-4">
+              <span className="inline-flex rounded-full bg-sky-100 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-sky-800">Walk-in</span>
+              <h3 className="mt-3 text-xl font-black text-[#061b36]">Add a walk-in payment</h3>
+              <p className="mt-1 text-sm leading-6 text-[#526174]">Record a present student who came without registration and the amount collected.</p>
             </div>
 
             <div>
@@ -264,7 +277,7 @@ export default function FinancePanel() {
                 required
                 value={manualForm.courseId}
                 onChange={(event) => setManualForm((current) => ({ ...current, courseId: event.target.value }))}
-                className="w-full border border-gray-300 rounded px-3 py-2"
+                className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
               >
                 <option value="">Select a course</option>
                 {courses.map((course) => (
@@ -282,7 +295,7 @@ export default function FinancePanel() {
                   required
                   value={manualForm.date}
                   onChange={(event) => setManualForm((current) => ({ ...current, date: event.target.value }))}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
+                  className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                 />
               </div>
               <div>
@@ -295,7 +308,7 @@ export default function FinancePanel() {
                   required
                   value={manualForm.amount}
                   onChange={(event) => setManualForm((current) => ({ ...current, amount: event.target.value }))}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
+                  className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                 />
               </div>
             </div>
@@ -309,7 +322,7 @@ export default function FinancePanel() {
                   required
                   value={manualForm.studentName}
                   onChange={(event) => setManualForm((current) => ({ ...current, studentName: event.target.value }))}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
+                  className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                   placeholder="e.g. Nadia Smith"
                 />
               </div>
@@ -322,7 +335,7 @@ export default function FinancePanel() {
                   max="120"
                   value={manualForm.age}
                   onChange={(event) => setManualForm((current) => ({ ...current, age: event.target.value }))}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
+                  className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                 />
               </div>
             </div>
@@ -334,20 +347,23 @@ export default function FinancePanel() {
                 value={manualForm.notes}
                 onChange={(event) => setManualForm((current) => ({ ...current, notes: event.target.value }))}
                 rows={3}
-                className="w-full border border-gray-300 rounded px-3 py-2"
+                className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                 placeholder="Optional note"
               />
             </div>
 
-            <button type="submit" disabled={manualSaving} className="w-full rounded bg-violet-600 px-4 py-2 font-semibold text-white hover:bg-violet-700 disabled:opacity-60">
+            <button type="submit" disabled={manualSaving} className="w-full rounded-xl bg-[#007a3f] px-4 py-3 font-bold text-white shadow-sm transition hover:bg-[#005f32] disabled:cursor-not-allowed disabled:opacity-60">
               {manualSaving ? 'Saving...' : 'Add walk-in payment'}
             </button>
           </form>
 
-          <section className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b bg-gray-50 px-6 py-4">
-              <h2 className="text-xl font-bold text-gray-800">Walk-in payments</h2>
-              <p className="font-bold text-violet-600">{formatAmount(totals.manualReceived)}</p>
+          <section className="overflow-hidden rounded-2xl border border-[#dfe7ef] bg-white shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#e8eef4] bg-[#f7fafc] px-5 py-4 sm:px-6">
+              <div>
+                <h3 className="text-lg font-black text-[#061b36]">Walk-in payments</h3>
+                <p className="mt-0.5 text-xs text-[#526174]">Unregistered students recorded at the door</p>
+              </div>
+              <p className="rounded-full bg-sky-100 px-3 py-1 text-sm font-black text-sky-800">{formatAmount(totals.manualReceived)}</p>
             </div>
             {manualAttendances.length === 0 ? (
               <p className="p-6 text-gray-600">No manual present students recorded.</p>
@@ -356,15 +372,15 @@ export default function FinancePanel() {
                 <table className="w-full text-sm">
                   <thead className="border-b">
                     <tr>
-                      <th className="px-6 py-3 text-left">Student</th>
-                      <th className="px-6 py-3 text-left">Course</th>
-                      <th className="px-6 py-3 text-left">Date</th>
-                      <th className="px-6 py-3 text-right">Amount</th>
+                      <th className="bg-[#f7fafc] px-6 py-3 text-left text-xs font-bold uppercase tracking-wide text-[#526174]">Student</th>
+                      <th className="bg-[#f7fafc] px-6 py-3 text-left text-xs font-bold uppercase tracking-wide text-[#526174]">Course</th>
+                      <th className="bg-[#f7fafc] px-6 py-3 text-left text-xs font-bold uppercase tracking-wide text-[#526174]">Date</th>
+                      <th className="bg-[#f7fafc] px-6 py-3 text-right text-xs font-bold uppercase tracking-wide text-[#526174]">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
                     {manualAttendances.map((record) => (
-                      <tr key={record.id} className="border-b last:border-b-0">
+                      <tr key={record.id} className="border-b border-[#edf1f5] transition last:border-b-0 hover:bg-sky-50/50">
                         <td className="px-6 py-3">
                           <div className="font-medium text-gray-800">{record.studentName}</div>
                           {record.age !== null && record.age !== undefined && <div className="text-xs text-gray-500">Age {record.age}</div>}
@@ -379,7 +395,8 @@ export default function FinancePanel() {
               </div>
             )}
           </section>
-        </section>
+          </section>
+        </div>
       )}
 
       {activeTab === 'expenses' && <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
