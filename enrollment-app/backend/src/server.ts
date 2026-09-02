@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
+import { ensureDatabaseGuard } from './lib/dbGuard';
 
 dotenv.config();
 
@@ -16,6 +17,16 @@ if (process.env.DATABASE_URL) {
 
 const app = express();
 const prisma = new PrismaClient();
+
+(async () => {
+  try {
+    await ensureDatabaseGuard(prisma);
+  } catch (error) {
+    console.error('Database guard failed:', error instanceof Error ? error.message : error);
+    process.exit(1);
+  }
+})();
+
 const allowedOrigins = [
   'http://localhost:3000',
   'http://127.0.0.1:3000',

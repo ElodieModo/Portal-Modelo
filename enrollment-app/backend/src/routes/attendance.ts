@@ -1,6 +1,6 @@
 import { Router, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { AuthRequest, authenticate } from '../middleware/auth';
+import { AuthRequest, adminOnly, authenticate } from '../middleware/auth';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -23,6 +23,59 @@ router.post('/', authenticate, async (req: AuthRequest, res: Response) => {
     res.status(201).json(attendance);
   } catch (error) {
     res.status(500).json({ error: 'Failed to record attendance' });
+  }
+});
+
+router.post('/manual', adminOnly, async (req: AuthRequest, res: Response) => {
+  try {
+    const { courseId, date, studentName, age, amount, notes } = req.body;
+
+    if (!courseId || !date || !studentName || !studentName.trim()) {
+      return res.status(400).json({ error: 'Course, date and student name are required.' });
+    }
+
+    const parsedAmount = Number(amount);
+    if (!Number.isFinite(parsedAmount) || parsedAmount < 0) {
+      return res.status(400).json({ error: 'A valid payment amount is required.' });
+    }
+
+    const course = await prisma.course.findUnique({ where: { id: courseId } });
+    if (!course) {
+      return res.status(404).json({ error: 'Course not found.' });
+    }
+
+    const manualAttendance = await prisma.manualAttendance.create({
+      data: {
+        courseId,
+        date: new Date(date),
+        studentName: studentName.trim(),
+        age: age === undefined || age === null || age === '' ? null : Number(age),
+        amount: parsedAmount,
+        notes: notes?.trim() || null
+      },
+      include: {
+        course: true
+      }
+    });
+
+    res.status(201).json(manualAttendance);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to record manual attendance' });
+  }
+});
+
+router.get('/manual', adminOnly, async (req: AuthRequest, res: Response) => {
+  try {
+    const records = await prisma.manualAttendance.findMany({
+      include: {
+        course: true
+      },
+      orderBy: { date: 'desc' }
+    });
+
+    res.json(records);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch manual attendance' });
   }
 });
 

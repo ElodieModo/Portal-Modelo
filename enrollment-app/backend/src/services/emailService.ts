@@ -32,16 +32,16 @@ interface PricingRates {
 
 export const emailService = {
   /**
-   * Compute a per-participant price breakdown based on age (child rate applies at/under childAgeLimit)
+   * Compute a per-participant price breakdown based on age using a flat fee per class/session.
    */
-  computePricing(participants: Participant[], durationHours: number, rates?: PricingRates) {
-    if (!rates || !durationHours) {
+  computePricing(participants: Participant[], _durationHours: number, rates?: PricingRates) {
+    if (!rates) {
       return { lines: [] as { label: string; price: string }[], total: 'TBD' };
     }
     let total = 0;
     const lines = participants.map(p => {
       const isChild = p.age <= rates.childAgeLimit;
-      const price = (isChild ? rates.child : rates.adult) * durationHours;
+      const price = isChild ? rates.child : rates.adult;
       total += price;
       return {
         label: `${p.firstName} ${p.lastName} (${p.age} yo, ${isChild ? 'child' : 'adult'} rate)`,

@@ -7,7 +7,7 @@ import { emailService } from '../services/emailService';
 const router = Router();
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'efe8c89a1b25b9645c6508fea160fc4cac3d2d4b6f303a3e5dafd25bff952004d4e614f8fbb3a4c9dfbc34fbaea13071f27c77c6e2cd6ba4dcb5cfaaf77ee31b';
-const CHILD_AGE_LIMIT = 14; // £6/hour rate applies to participants this age or younger
+const CHILD_AGE_LIMIT = 14; // £6/session rate applies to participants this age or younger
 
 // Get all enrollments
 router.get('/', async (req: AuthRequest, res: Response) => {

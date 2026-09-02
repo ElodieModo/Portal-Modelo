@@ -72,14 +72,15 @@ model Course {
   location String? // Optional location override
 
   // Pricing
-  pricePerHour      Float @default(8.0) // £8/hour for adults
-  childPricePerHour Float @default(6.0) // £6/hour for children (14 and under)
+  pricePerHour      Float @default(8.0) // £8 per class/session for adults
+  childPricePerHour Float @default(6.0) // £6 per class/session for children (14 and under)
 
   maxStudents Int      @default(20)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   enrollments Enrollment[]
+  manualAttendances ManualAttendance[]
 
   @@map("courses")
 }
@@ -178,4 +179,18 @@ model Attendance {
   updatedAt    DateTime   @updatedAt
 
   @@map("attendance")
+}
+
+model ManualAttendance {
+  id          String   @id @default(cuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  date        DateTime
+  studentName String
+  age         Int?
+  amount      Float
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  @@map("manual_attendances")
 }
