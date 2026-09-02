@@ -51,7 +51,7 @@ export default function FinancePanel() {
   const [expenseSaving, setExpenseSaving] = useState(false);
   const [manualSaving, setManualSaving] = useState(false);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<'payments' | 'expenses' | 'manual'>('payments');
+  const [activeTab, setActiveTab] = useState<'payments' | 'expenses'>('payments');
   const [manualForm, setManualForm] = useState({
     courseId: '',
     date: new Date().toISOString().slice(0, 10),
@@ -247,21 +247,14 @@ export default function FinancePanel() {
         >
           Association expenses
         </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('manual')}
-          className={`shrink-0 border-b-2 px-4 py-3 text-sm font-bold ${activeTab === 'manual' ? 'border-violet-600 text-violet-700' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
-        >
-          Manual present students
-        </button>
       </div>
 
-      {activeTab === 'manual' && (
+      {activeTab === 'payments' && (
         <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
           <form onSubmit={handleManualAttendanceSubmit} className="bg-white p-6 rounded-lg shadow space-y-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-800">Add a student who came without registration</h2>
-              <p className="mt-1 text-sm text-gray-600">Record a walk-in participant and the amount effectively collected.</p>
+              <h2 className="text-xl font-bold text-gray-800">Add a walk-in payment</h2>
+              <p className="mt-1 text-sm text-gray-600">Record a present student who came without registration and the amount collected.</p>
             </div>
 
             <div>
@@ -347,13 +340,13 @@ export default function FinancePanel() {
             </div>
 
             <button type="submit" disabled={manualSaving} className="w-full rounded bg-violet-600 px-4 py-2 font-semibold text-white hover:bg-violet-700 disabled:opacity-60">
-              {manualSaving ? 'Saving...' : 'Add present student'}
+              {manualSaving ? 'Saving...' : 'Add walk-in payment'}
             </button>
           </form>
 
           <section className="bg-white rounded-lg shadow overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b bg-gray-50 px-6 py-4">
-              <h2 className="text-xl font-bold text-gray-800">Manual entries</h2>
+              <h2 className="text-xl font-bold text-gray-800">Walk-in payments</h2>
               <p className="font-bold text-violet-600">{formatAmount(totals.manualReceived)}</p>
             </div>
             {manualAttendances.length === 0 ? (
