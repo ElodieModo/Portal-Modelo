@@ -309,7 +309,7 @@ export default function FinancePanel() {
                 required
                 value={manualForm.courseId}
                 onChange={(event) => setManualForm((current) => ({ ...current, courseId: event.target.value }))}
-                className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                className="block w-full min-w-0 max-w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
               >
                 <option value="">Select a course</option>
                 {courses.map((course) => (
@@ -327,7 +327,7 @@ export default function FinancePanel() {
                   required
                   value={manualForm.date}
                   onChange={(event) => setManualForm((current) => ({ ...current, date: event.target.value }))}
-                  className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                  className="block w-full min-w-0 max-w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                 />
               </div>
               <div className="min-w-0">
@@ -340,7 +340,7 @@ export default function FinancePanel() {
                   required
                   value={manualForm.amount}
                   onChange={(event) => setManualForm((current) => ({ ...current, amount: event.target.value }))}
-                  className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                  className="block w-full min-w-0 max-w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                 />
               </div>
             </div>
@@ -354,7 +354,7 @@ export default function FinancePanel() {
                   required
                   value={manualForm.studentName}
                   onChange={(event) => setManualForm((current) => ({ ...current, studentName: event.target.value }))}
-                  className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                  className="block w-full min-w-0 max-w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                   placeholder="e.g. Nadia Smith"
                 />
               </div>
@@ -367,7 +367,7 @@ export default function FinancePanel() {
                   max="120"
                   value={manualForm.age}
                   onChange={(event) => setManualForm((current) => ({ ...current, age: event.target.value }))}
-                  className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                  className="block w-full min-w-0 max-w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                 />
               </div>
             </div>
@@ -379,7 +379,7 @@ export default function FinancePanel() {
                 value={manualForm.notes}
                 onChange={(event) => setManualForm((current) => ({ ...current, notes: event.target.value }))}
                 rows={3}
-                className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                className="block w-full min-w-0 max-w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                 placeholder="Optional note"
               />
             </div>
