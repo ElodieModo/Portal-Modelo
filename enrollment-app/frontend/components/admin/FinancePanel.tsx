@@ -294,8 +294,8 @@ export default function FinancePanel() {
             </div>
           </div>
 
-          <section className="grid gap-5 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.4fr)]">
-          <form onSubmit={handleManualAttendanceSubmit} className="rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-white p-5 shadow-sm sm:p-6">
+          <section className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.4fr)]">
+          <form onSubmit={handleManualAttendanceSubmit} className="min-w-0 rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-white p-5 shadow-sm sm:p-6">
             <div className="mb-5 border-b border-sky-100 pb-4">
               <span className="inline-flex rounded-full bg-sky-100 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-sky-800">Walk-in</span>
               <h3 className="mt-3 text-xl font-black text-[#061b36]">{editingManualId ? 'Edit walk-in payment' : 'Add a walk-in payment'}</h3>
@@ -318,8 +318,8 @@ export default function FinancePanel() {
               </select>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="min-w-0">
                 <label htmlFor="manual-date" className="block text-sm font-semibold text-gray-700 mb-1">Course date</label>
                 <input
                   id="manual-date"
@@ -330,7 +330,7 @@ export default function FinancePanel() {
                   className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                 />
               </div>
-              <div>
+              <div className="min-w-0">
                 <label htmlFor="manual-amount" className="block text-sm font-semibold text-gray-700 mb-1">Amount collected (£)</label>
                 <input
                   id="manual-amount"
@@ -345,8 +345,8 @@ export default function FinancePanel() {
               </div>
             </div>
 
-            <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.8fr)] gap-3">
-              <div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1.5fr)_minmax(5rem,0.8fr)]">
+              <div className="min-w-0">
                 <label htmlFor="manual-student-name" className="block text-sm font-semibold text-gray-700 mb-1">Student name</label>
                 <input
                   id="manual-student-name"
@@ -358,7 +358,7 @@ export default function FinancePanel() {
                   placeholder="e.g. Nadia Smith"
                 />
               </div>
-              <div>
+              <div className="min-w-0">
                 <label htmlFor="manual-age" className="block text-sm font-semibold text-gray-700 mb-1">Age</label>
                 <input
                   id="manual-age"
