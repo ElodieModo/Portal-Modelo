@@ -7,7 +7,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "render-build": "prisma generate && npm run build",
+    "render-build": "prisma generate && prisma migrate deploy && npm run build",
     "create-admin": "ts-node scripts/create-admin.ts",
     "reset-admin-password": "ts-node scripts/reset-admin-password.ts",
     "lint": "eslint src --ext .ts",
