@@ -53,10 +53,16 @@ export default function StudentCoursesPage() {
         const dates = course.date ? [course.date] : (course.sessionDates || []);
         return dates.map((enrollmentDate) => ({ ...course, enrollmentDate }));
       });
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
       const uniqueDates = new Set<string>();
       setCourses(datedCourses.filter((course: Course) => {
-        const dateKey = new Date(course.enrollmentDate).toISOString().slice(0, 10);
+        const courseDate = new Date(course.enrollmentDate);
+        courseDate.setHours(0, 0, 0, 0);
+        if (courseDate < today) return false;
+
+        const dateKey = courseDate.toISOString().slice(0, 10);
         if (uniqueDates.has(dateKey)) return false;
         uniqueDates.add(dateKey);
         return true;
