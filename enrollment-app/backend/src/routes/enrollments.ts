@@ -108,13 +108,27 @@ router.post('/', async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ error: 'You are already enrolled for this date.' });
     }
 
+    const courseCategory = course.category.toLowerCase();
+    const isFreeTrialEligibleCourse = course.type === 'REGULAR' && (
+      courseCategory.includes('adult') ||
+      courseCategory.includes('family') ||
+      course.level === 'FAMILY'
+    );
     const priorEnrollmentCount = await prisma.enrollment.count({
       where: {
         studentId,
-        status: { not: 'CANCELLED' }
+        status: { not: 'CANCELLED' },
+        course: {
+          type: 'REGULAR',
+          OR: [
+            { category: { contains: 'adult', mode: 'insensitive' } },
+            { category: { contains: 'family', mode: 'insensitive' } },
+            { level: 'FAMILY' }
+          ]
+        }
       }
     });
-    const isFreeTrial = priorEnrollmentCount === 0;
+    const isFreeTrial = isFreeTrialEligibleCourse && priorEnrollmentCount === 0;
 
     const dateEnrollments = course.enrollments.filter(enrollment => {
       const existingDate = new Date(enrollment.enrollmentDate);

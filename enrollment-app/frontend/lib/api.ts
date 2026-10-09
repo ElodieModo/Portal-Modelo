@@ -103,6 +103,18 @@ class ApiClient {
     return this.request('/dashboard/enrollments');
   }
 
+  async createAdminEnrollment(data: {
+    studentId: string;
+    courseId: string;
+    enrollmentDate: string;
+    age: number;
+  }) {
+    return this.request('/dashboard/enrollments', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   async getFinanceEnrollments() {
     return this.request('/dashboard/finance');
   }
@@ -188,6 +200,19 @@ async cancelAdminEnrollment(enrollmentId: string) {
 
   async getAllStudents() {
     return this.request('/dashboard/students');
+  }
+
+  async createStudent(data: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    phone?: string;
+    age?: number;
+  }) {
+    return this.request('/dashboard/students', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   }
 
   // Courses

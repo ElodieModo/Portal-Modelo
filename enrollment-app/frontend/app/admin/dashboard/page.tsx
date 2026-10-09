@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/api';
 import DashboardHeader from '@/components/admin/DashboardHeader';
+import AdminEnrollmentModal from '@/components/admin/AdminEnrollmentModal';
 import CourseList from '@/components/admin/CourseList';
 import EnrollmentStats from '@/components/admin/EnrollmentStats';
 import FinancePanel from '@/components/admin/FinancePanel';
@@ -103,6 +104,12 @@ export default function AdminDashboard() {
 function StudentList() {
   const [students, setStudents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [formOpen, setFormOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', phone: '', age: '' });
+  const [enrollmentStudent, setEnrollmentStudent] = useState<any>(null);
+  const [enrollmentSuccess, setEnrollmentSuccess] = useState('');
 
   const getCreatedByLabel = (value?: string | null) => {
     if (!value) return 'Unknown';
@@ -128,40 +135,134 @@ function StudentList() {
 
   if (loading) return <p className="text-sm text-[#64716c]">Loading students...</p>;
 
-  if (students.length === 0) {
-    return <p className="text-sm text-[#64716c]">No registered students yet.</p>;
-  }
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSaving(true);
+    setFormError('');
+    const response = await apiClient.createStudent({
+      firstName: formData.firstName.trim(),
+      lastName: formData.lastName.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim() || undefined,
+      age: formData.age === '' ? undefined : Number(formData.age),
+    });
+
+    if (response.error) {
+      setFormError(response.error);
+    } else if (response.data) {
+      setStudents((current) => [...current, response.data].sort((a, b) => a.firstName.localeCompare(b.firstName)));
+      setFormData({ firstName: '', lastName: '', email: '', phone: '', age: '' });
+      setFormOpen(false);
+    }
+    setSaving(false);
+  };
+
+  const handleEnrollmentSuccess = async () => {
+    setEnrollmentStudent(null);
+    setEnrollmentSuccess('Inscription au cours créée.');
+    const response = await apiClient.getAllStudents();
+    if (!response.error && Array.isArray(response.data)) {
+      setStudents(response.data);
+    }
+  };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[820px] text-sm">
-        <thead className="border-b border-[#e7dfd5] bg-[#f9f5ee]">
-          <tr>
-            <th className="px-4 py-2 text-left font-bold text-[#061b36]">Name</th>
-            <th className="px-4 py-2 text-left font-bold text-[#061b36]">Email</th>
-            <th className="px-4 py-2 text-left font-bold text-[#061b36]">Phone</th>
-            <th className="px-4 py-2 text-left font-bold text-[#061b36]">Created by</th>
-            <th className="px-4 py-2 text-left font-bold text-[#061b36]">Account created</th>
-            <th className="px-4 py-2 text-left font-bold text-[#061b36]">Courses</th>
-          </tr>
-        </thead>
-        <tbody>
-          {students.map((student) => (
-            <tr key={student.id} className="border-b border-[#f0e9e1] hover:bg-[#fffaf2]">
-              <td className="px-4 py-2 font-medium text-[#17231f]">
-                {student.firstName} {student.lastName}
-              </td>
-              <td className="px-4 py-2 text-[#4d5d59]">{student.email}</td>
-              <td className="px-4 py-2 text-[#4d5d59]">{student.phone || 'Not provided'}</td>
-              <td className="px-4 py-2 text-[#4d5d59]">{getCreatedByLabel(student.createdBy)}</td>
-              <td className="whitespace-nowrap px-4 py-2 text-[#4d5d59]">
-                {new Date(student.createdAt).toLocaleDateString()}
-              </td>
-              <td className="px-4 py-2 text-[#4d5d59]">{student.enrollments?.length || 0}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div>
+      {enrollmentSuccess && (
+        <p role="status" className="mb-4 rounded border border-green-200 bg-green-50 p-3 text-sm text-green-800">
+          {enrollmentSuccess}
+        </p>
+      )}
+      <div className="mb-4 flex justify-end">
+        <button
+          type="button"
+          onClick={() => { setFormOpen((open) => !open); setFormError(''); }}
+          className="rounded-md bg-[#007a3f] px-4 py-2 text-sm font-bold text-white hover:bg-[#006332]"
+        >
+          {formOpen ? 'Cancel' : 'Add student'}
+        </button>
+      </div>
+      {formOpen && (
+        <form onSubmit={handleSubmit} className="mb-6 grid grid-cols-1 gap-4 rounded-lg border border-[#e7dfd5] bg-[#fffdf9] p-4 sm:grid-cols-2">
+          {formError && <p role="alert" className="sm:col-span-2 text-sm text-red-700">{formError}</p>}
+          <label className="text-sm font-semibold text-[#061b36]">
+            First name *
+            <input required value={formData.firstName} onChange={(event) => setFormData({ ...formData, firstName: event.target.value })} className="mt-1 w-full rounded border border-[#d9d2c8] px-3 py-2 font-normal" />
+          </label>
+          <label className="text-sm font-semibold text-[#061b36]">
+            Last name *
+            <input required value={formData.lastName} onChange={(event) => setFormData({ ...formData, lastName: event.target.value })} className="mt-1 w-full rounded border border-[#d9d2c8] px-3 py-2 font-normal" />
+          </label>
+          <label className="text-sm font-semibold text-[#061b36]">
+            Email *
+            <input required type="email" value={formData.email} onChange={(event) => setFormData({ ...formData, email: event.target.value })} className="mt-1 w-full rounded border border-[#d9d2c8] px-3 py-2 font-normal" />
+          </label>
+          <label className="text-sm font-semibold text-[#061b36]">
+            Phone
+            <input type="tel" value={formData.phone} onChange={(event) => setFormData({ ...formData, phone: event.target.value })} className="mt-1 w-full rounded border border-[#d9d2c8] px-3 py-2 font-normal" />
+          </label>
+          <label className="text-sm font-semibold text-[#061b36]">
+            Age
+            <input type="number" min="0" max="120" step="1" value={formData.age} onChange={(event) => setFormData({ ...formData, age: event.target.value })} className="mt-1 w-full rounded border border-[#d9d2c8] px-3 py-2 font-normal" />
+          </label>
+          <div className="flex items-end">
+            <button type="submit" disabled={saving} className="rounded-md bg-[#007a3f] px-4 py-2 text-sm font-bold text-white hover:bg-[#006332] disabled:opacity-60">
+              {saving ? 'Adding...' : 'Create student'}
+            </button>
+          </div>
+        </form>
+      )}
+      {students.length === 0 ? (
+        <p className="text-sm text-[#64716c]">No registered students yet.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[820px] text-sm">
+            <thead className="border-b border-[#e7dfd5] bg-[#f9f5ee]">
+              <tr>
+                <th className="px-4 py-2 text-left font-bold text-[#061b36]">Name</th>
+                <th className="px-4 py-2 text-left font-bold text-[#061b36]">Email</th>
+                <th className="px-4 py-2 text-left font-bold text-[#061b36]">Phone</th>
+                <th className="px-4 py-2 text-left font-bold text-[#061b36]">Created by</th>
+                <th className="px-4 py-2 text-left font-bold text-[#061b36]">Account created</th>
+                <th className="px-4 py-2 text-left font-bold text-[#061b36]">Courses</th>
+                <th className="px-4 py-2 text-right font-bold text-[#061b36]">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {students.map((student) => (
+                <tr key={student.id} className="border-b border-[#f0e9e1] hover:bg-[#fffaf2]">
+                  <td className="px-4 py-2 font-medium text-[#17231f]">
+                    {student.firstName} {student.lastName}
+                  </td>
+                  <td className="px-4 py-2 text-[#4d5d59]">{student.email}</td>
+                  <td className="px-4 py-2 text-[#4d5d59]">{student.phone || 'Not provided'}</td>
+                  <td className="px-4 py-2 text-[#4d5d59]">{getCreatedByLabel(student.createdBy)}</td>
+                  <td className="whitespace-nowrap px-4 py-2 text-[#4d5d59]">
+                    {new Date(student.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-2 text-[#4d5d59]">{student.enrollments?.length || 0}</td>
+                  <td className="px-4 py-2 text-right">
+                    <button
+                      type="button"
+                      onClick={() => { setEnrollmentSuccess(''); setEnrollmentStudent(student); }}
+                      className="rounded px-3 py-1 text-sm font-semibold text-[#007a3f] hover:bg-green-50"
+                    >
+                      Inscrire
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {enrollmentStudent && (
+        <AdminEnrollmentModal
+          student={enrollmentStudent}
+          onClose={() => setEnrollmentStudent(null)}
+          onSuccess={handleEnrollmentSuccess}
+        />
+      )}
     </div>
   );
 }
@@ -169,6 +270,7 @@ function StudentList() {
 function EnrollmentList() {
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dateFilter, setDateFilter] = useState('all');
 
   useEffect(() => {
     const fetchEnrollments = async () => {
@@ -190,9 +292,21 @@ function EnrollmentList() {
 
   if (loading) return <p className="text-sm text-[#64716c]">Loading enrollments...</p>;
 
+  const availableDates = Array.from(new Set(
+    enrollments.map((enrollment) => new Date(enrollment.enrollmentDate).toISOString().slice(0, 10))
+  )).sort();
+  const visibleEnrollments = dateFilter === 'all'
+    ? enrollments
+    : enrollments.filter((enrollment) => (
+      new Date(enrollment.enrollmentDate).toISOString().slice(0, 10) === dateFilter
+    ));
+  const participantCount = visibleEnrollments.reduce(
+    (total, enrollment) => total + (enrollment.participants?.length || 0),
+    0
+  );
   const groupedEnrollments = COURSE_GROUPS.map((group) => ({
     group,
-    enrollments: enrollments
+    enrollments: visibleEnrollments
       .filter((enrollment) => getCourseGroupLabel(enrollment.course) === group)
       .sort((first, second) => (
         new Date(first.enrollmentDate).getTime() - new Date(second.enrollmentDate).getTime()
@@ -200,8 +314,36 @@ function EnrollmentList() {
   }));
 
   return (
-    <div className="overflow-x-auto">
-      {groupedEnrollments.map(({ group, enrollments: categoryEnrollments }) => (
+    <div>
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <label htmlFor="enrollment-date-filter" className="mb-1 block text-sm font-semibold text-[#061b36]">
+            Course date
+          </label>
+          <select
+            id="enrollment-date-filter"
+            value={dateFilter}
+            onChange={(event) => setDateFilter(event.target.value)}
+            className="min-w-52 rounded border border-[#d9d2c8] bg-white px-3 py-2 text-sm text-[#17231f]"
+          >
+            <option value="all">All dates</option>
+            {availableDates.map((date) => (
+              <option key={date} value={date}>
+                {new Date(`${date}T12:00:00`).toLocaleDateString()}
+              </option>
+            ))}
+          </select>
+        </div>
+        <p className="text-sm text-[#64716c]">
+          {visibleEnrollments.length} enrollment{visibleEnrollments.length === 1 ? '' : 's'}
+          {' · '}{participantCount} participant{participantCount === 1 ? '' : 's'}
+        </p>
+      </div>
+      {visibleEnrollments.length === 0 ? (
+        <p className="text-sm text-[#64716c]">No enrollments for this date.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          {groupedEnrollments.map(({ group, enrollments: categoryEnrollments }) => (
         <section key={group} className="mb-8 last:mb-0">
           <h3 className="mb-3 text-lg font-black text-[#061b36]">{group}</h3>
           {categoryEnrollments.length === 0 ? (
@@ -266,7 +408,9 @@ function EnrollmentList() {
             </table>
           )}
         </section>
-      ))}
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import { Router, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { AuthRequest, adminOnly } from '../middleware/auth';
 import { emailService } from '../services/emailService';
 
@@ -127,6 +129,112 @@ router.get('/enrollments', adminOnly, async (req: AuthRequest, res: Response) =>
     res.json(enrollments);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch enrollments' });
+  }
+});
+
+router.post('/enrollments', adminOnly, async (req: AuthRequest, res: Response) => {
+  try {
+    const { studentId, courseId, enrollmentDate, age } = req.body;
+    const requestedDateValue = typeof enrollmentDate === 'string' ? enrollmentDate.slice(0, 10) : '';
+    if (!studentId || !courseId || !/^\d{4}-\d{2}-\d{2}$/.test(requestedDateValue)) {
+      return res.status(400).json({ error: 'Student, course and a valid course date are required' });
+    }
+    if (!Number.isInteger(age) || age < 0 || age > 120) {
+      return res.status(400).json({ error: 'A valid student age is required' });
+    }
+
+    const requestedDate = new Date(`${requestedDateValue}T00:00:00.000Z`);
+    const nextDate = new Date(requestedDate.getTime() + 24 * 60 * 60 * 1000);
+    const [student, course] = await Promise.all([
+      prisma.student.findUnique({ where: { id: studentId } }),
+      prisma.course.findUnique({ where: { id: courseId }, include: { enrollments: true } })
+    ]);
+
+    if (!student) return res.status(404).json({ error: 'Student not found' });
+    if (!course) return res.status(404).json({ error: 'Course not found' });
+
+    const dateKey = requestedDate.toISOString().slice(0, 10);
+    const availableDates = course.date ? [course.date] : course.sessionDates;
+    if (!availableDates.some((date) => date.toISOString().slice(0, 10) === dateKey)) {
+      return res.status(400).json({ error: 'This date is not available for the selected course' });
+    }
+
+    const existing = await prisma.enrollment.findFirst({
+      where: {
+        studentId,
+        courseId,
+        enrollmentDate: { gte: requestedDate, lt: nextDate }
+      }
+    });
+    if (existing?.status === 'ACTIVE') {
+      return res.status(409).json({ error: 'This student is already enrolled for this course date' });
+    }
+
+    const enrolledPeople = course.enrollments
+      .filter((enrollment) => (
+        enrollment.status === 'ACTIVE' &&
+        enrollment.enrollmentDate.toISOString().slice(0, 10) === dateKey
+      ))
+      .reduce((total, enrollment) => total + enrollment.numberOfPeople, 0);
+    if (enrolledPeople >= course.maxStudents) {
+      return res.status(400).json({ error: 'This course date has no available places' });
+    }
+
+    const category = course.category.toLowerCase();
+    const isEligibleForFreeTrial = course.type === 'REGULAR' && (
+      category.includes('adult') || category.includes('family') || course.level === 'FAMILY'
+    );
+    const priorEligibleEnrollments = await prisma.enrollment.count({
+      where: {
+        studentId,
+        status: { not: 'CANCELLED' },
+        course: {
+          type: 'REGULAR',
+          OR: [
+            { category: { contains: 'adult', mode: 'insensitive' } },
+            { category: { contains: 'family', mode: 'insensitive' } },
+            { level: 'FAMILY' }
+          ]
+        }
+      }
+    });
+    const isFreeTrial = isEligibleForFreeTrial && priorEligibleEnrollments === 0;
+    const participant = {
+      firstName: student.firstName,
+      lastName: student.lastName,
+      age
+    };
+    const enrollment = existing
+      ? await prisma.enrollment.update({
+          where: { id: existing.id },
+          data: {
+            status: 'ACTIVE',
+            numberOfPeople: 1,
+            isFreeTrial,
+            paymentWaived: false,
+            paymentReceived: false,
+            participants: {
+              deleteMany: {},
+              create: participant
+            }
+          },
+          include: { student: true, course: true, participants: true }
+        })
+      : await prisma.enrollment.create({
+          data: {
+            studentId,
+            courseId,
+            enrollmentDate: requestedDate,
+            numberOfPeople: 1,
+            isFreeTrial,
+            participants: { create: participant }
+          },
+          include: { student: true, course: true, participants: true }
+        });
+
+    res.status(existing ? 200 : 201).json({ enrollment });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to enroll student in course' });
   }
 });
 
@@ -276,8 +384,8 @@ router.put('/finance/:enrollmentId/free', adminOnly, async (req: AuthRequest, re
 
     const enrollment = await prisma.enrollment.update({
       where: { id: req.params.enrollmentId },
-      data: { paymentWaived: free },
-      select: { id: true, paymentWaived: true }
+      data: { isFreeTrial: false, paymentWaived: free },
+      select: { id: true, isFreeTrial: true, paymentWaived: true }
     });
 
     res.json(enrollment);
@@ -380,6 +488,65 @@ router.get('/students', adminOnly, async (req: AuthRequest, res: Response) => {
     res.json(students);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch students' });
+  }
+});
+
+router.post('/students', adminOnly, async (req: AuthRequest, res: Response) => {
+  try {
+    const { email, firstName, lastName, phone, age } = req.body;
+    const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+
+    if (
+      !normalizedEmail ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) ||
+      typeof firstName !== 'string' ||
+      !firstName.trim() ||
+      typeof lastName !== 'string' ||
+      !lastName.trim()
+    ) {
+      return res.status(400).json({ error: 'First name, last name and a valid email are required' });
+    }
+
+    const parsedAge = age === undefined || age === null || age === '' ? null : Number(age);
+    if (parsedAge !== null && (!Number.isInteger(parsedAge) || parsedAge < 0 || parsedAge > 120)) {
+      return res.status(400).json({ error: 'Age must be a whole number between 0 and 120' });
+    }
+    if (phone !== undefined && phone !== null && typeof phone !== 'string') {
+      return res.status(400).json({ error: 'Phone must be a string' });
+    }
+
+    const existingStudent = await prisma.student.findUnique({ where: { email: normalizedEmail } });
+    if (existingStudent) {
+      return res.status(409).json({ error: 'A student with this email already exists' });
+    }
+
+    const student = await prisma.student.create({
+      data: {
+        email: normalizedEmail,
+        password: await bcrypt.hash(crypto.randomUUID(), 10),
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        phone: typeof phone === 'string' && phone.trim() ? phone.trim() : null,
+        age: parsedAge,
+        createdBy: 'ADMIN_MANUAL_CREATION'
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        age: true,
+        verified: true,
+        createdBy: true,
+        createdAt: true,
+        enrollments: { select: { id: true } }
+      }
+    });
+
+    res.status(201).json(student);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create student' });
   }
 });
 

@@ -221,10 +221,10 @@ export default function FinancePanel() {
   };
 
   const toggleFree = async (enrollment: FinanceEnrollment) => {
-    const free = !enrollment.paymentWaived;
+    const free = !(enrollment.isFreeTrial || enrollment.paymentWaived);
     setEnrollments((current) => current.map((item) => (
       item.id === enrollment.id
-        ? { ...item, paymentWaived: free, expectedAmount: free ? 0 : item.expectedAmount }
+        ? { ...item, isFreeTrial: false, paymentWaived: free, expectedAmount: free ? 0 : item.expectedAmount }
         : item
     )));
 
@@ -595,18 +595,18 @@ export default function FinancePanel() {
                         <td className="px-6 py-3">{enrollment.participants.length}</td>
                         <td className="px-6 py-3 font-semibold">
                           {enrollment.isFreeTrial || enrollment.paymentWaived
-                            ? (enrollment.isFreeTrial ? 'Free trial' : 'Free')
+                            ? (enrollment.isFreeTrial && !enrollment.paymentWaived ? 'Free trial' : 'Free')
                             : formatAmount(enrollment.expectedAmount)}
                         </td>
                         <td className="px-6 py-3">
                           <label className="inline-flex items-center gap-2 cursor-pointer">
                             <input
                               type="checkbox"
-                              checked={enrollment.paymentWaived}
+                              checked={enrollment.isFreeTrial || enrollment.paymentWaived}
                               onChange={() => toggleFree(enrollment)}
                               className="h-4 w-4 accent-blue-600"
                             />
-                            <span>{enrollment.paymentWaived ? 'Free' : 'Charge'}</span>
+                            <span>{enrollment.isFreeTrial || enrollment.paymentWaived ? 'Free' : 'Charge'}</span>
                           </label>
                         </td>
                         <td className="px-6 py-3">
