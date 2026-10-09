@@ -44,13 +44,29 @@ export default function CourseList() {
     fetchCourses();
   };
 
-  const handleViewEnrollments = async (courseId: string) => {
+  const handleViewEnrollments = async (courseId: string, selectedDate: string) => {
     setEnrollmentsLoading(true);
     setEnrollmentDetails(null);
 
     const response = await apiClient.getCourseEnrollments(courseId);
     if (!response.error) {
-      setEnrollmentDetails(response.data);
+      const data = response.data as { enrollments: any[]; course: any };
+      const dateKey = /^\d{4}-\d{2}-\d{2}/.test(selectedDate) ? selectedDate.slice(0, 10) : null;
+      const dateEnrollments = dateKey
+        ? data.enrollments.filter((enrollment: any) => (
+          enrollment.enrollmentDate.slice(0, 10) === dateKey
+        ))
+        : [];
+      const enrolledPeople = dateEnrollments
+        .filter((enrollment: any) => enrollment.status === 'ACTIVE')
+        .reduce((total: number, enrollment: any) => total + enrollment.numberOfPeople, 0);
+      setEnrollmentDetails({
+        ...data,
+        enrollments: dateEnrollments,
+        total: dateEnrollments.length,
+        available: data.course.maxStudents - enrolledPeople,
+        selectedDate: dateKey,
+      });
     } else {
       alert(`Error: ${response.error}`);
     }
@@ -108,6 +124,7 @@ export default function CourseList() {
             <div>
               <h2 className="text-xl font-bold text-amber-900">
                 Enrollments: {enrollmentDetails.course.name}
+                {enrollmentDetails.selectedDate && ` · ${new Date(`${enrollmentDetails.selectedDate}T12:00:00`).toLocaleDateString()}`}
               </h2>
               <p className="mt-1 text-sm text-amber-800">
                 {enrollmentDetails.total} enrolled · {enrollmentDetails.available} spots available
@@ -123,7 +140,7 @@ export default function CourseList() {
           </div>
 
           {enrollmentDetails.enrollments.length === 0 ? (
-            <p className="p-4 text-sm text-gray-600">No enrollments for this course yet.</p>
+            <p className="p-4 text-sm text-gray-600">No enrollments for this date yet.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[620px] text-sm">
@@ -257,7 +274,7 @@ export default function CourseList() {
                       <div className="mt-3 text-center">
                         <button
                           type="button"
-                          onClick={() => handleViewEnrollments(itemCourse.id)}
+                          onClick={() => handleViewEnrollments(itemCourse.id, date)}
                           className="text-amber-600 hover:text-amber-800 text-sm font-semibold"
                         >
                           View Enrollments →

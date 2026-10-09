@@ -62,7 +62,7 @@ export default function StudentCoursesPage() {
         courseDate.setHours(0, 0, 0, 0);
         if (courseDate < today) return false;
 
-        const dateKey = courseDate.toISOString().slice(0, 10);
+        const dateKey = `${course.id}-${courseDate.toISOString().slice(0, 10)}`;
         if (uniqueDates.has(dateKey)) return false;
         uniqueDates.add(dateKey);
         return true;
